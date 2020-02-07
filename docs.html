@@ -1,0 +1,776 @@
+<!DOCTYPE HTML> 
+<html>  
+  <head>  
+    <title>ExpantaNum</title>
+    <style>
+      body {
+        font-family: "Consolas", monospace;
+        font-size: 16px;
+      }
+      pre {
+        overflow-x: auto;
+        width: 100%;
+      }
+    </style>
+    <link href="./rainbow.css" rel="stylesheet" type="text/css"></style>
+    <script src="./rainbow-custom.min.js"></script>
+  </head> 
+  <body>
+    <h1>ExpantaNum.js Docs</h1>
+    <div style="border:1px black solid">
+      <ul>
+        <li><a href="#p">Properties</a>
+          <ul>
+            <li><a href="#p.array">array</a></li>
+            <li><a href="#p.layer">layer</a></li>
+            <li><a href="#p.sign">sign</a></li>
+          </ul>
+        </li>
+        <li><a href="#a">Methods (Arithmetic)</a>
+          <ul>
+            <li><a href="#a.abs">absoluteValue abs</a></li>
+            <li><a href="#a.arrow">arrow</a></li>
+            <li><a href="#a.ceil">ceiling ceil</a></li>
+            <li><a href="#a.cmp">compareTo cmp</a></li>
+            <li><a href="#a.cbrt">cubeRoot cbrt</a></li>
+            <li><a href="#a.div">divide div</a></li>
+            <li><a href="#a.eq">equalsTo eq</a></li>
+            <li><a href="#a.exp">exponential exp</a></li>
+            <li><a href="#a.fact">factorial fact</a></li>
+            <li><a href="#a.floor">floor</a></li>
+            <li><a href="#a.gamma">gamma</a></li>
+            <li><a href="#a.log10">generalLogarithm log10</a></li>
+            <li><a href="#a.gt">greaterThan gt</a></li>
+            <li><a href="#a.gte">greaterThanOrEqualTo gte</a></li>
+            <li><a href="#a.hyper">hyper</a></li>
+            <li><a href="#a.isFinite">isFinite</a></li>
+            <li><a href="#a.isInfinite">isInfinite</a></li>
+            <li><a href="#a.isint">isInteger isint</a></li>
+            <li><a href="#a.isNaN">isNaN</a></li>
+            <li><a href="#a.isneg">isNegative isneg</a></li>
+            <li><a href="#a.ispos">isPositive ispos</a></li>
+            <li><a href="#a.lambertw">lambertw</a></li>
+            <li><a href="#a.lt">lessThan lt</a></li>
+            <li><a href="#a.lte">lessThanOrEqualTo lte</a></li>
+            <li><a href="#a.logBase">logarithm logBase</a></li>
+            <li><a href="#a.sub">minus sub</a></li>
+            <li><a href="#a.mod">modular mod</a></li>
+            <li><a href="#a.ln">naturalLogarithm log ln</a></li>
+            <li><a href="#a.neg">negate neg</a></li>
+            <li><a href="#a.pent">pentate pent</a></li>
+            <li><a href="#a.add">plus add</a></li>
+            <li><a href="#a.rec">reciprocate rec</a></li>
+            <li><a href="#a.root">root</a></li>
+            <li><a href="#a.round">round</a></li>
+            <li><a href="#a.slog">slog</a></li>
+            <li><a href="#a.sqrt">squareRoot sqrt</a></li>
+            <li><a href="#a.ssrt">ssqrt ssrt</a></li>
+            <li><a href="#a.tetr">tetrate tetr</a></li>
+            <li><a href="#a.mul">times mul</a></li>
+            <li><a href="#a.pow">toPower pow</a></li>
+          </ul>
+        </li>
+        <li><a href="#s">Methods (System)</a>
+          <ul>
+            <li><a href="#s.fromArray">fromArray</a></li>
+            <li><a href="#s.fromHyperE">fromHyperE</a></li>
+            <li><a href="#s.fromJSON">fromJSON</a></li>
+            <li><a href="#s.fromNumber">fromNumber</a></li>
+            <li><a href="#s.fromObject">fromObject</a></li>
+            <li><a href="#s.fromString">fromString</a></li>
+            <li><a href="#s.ExpantaNum">ExpantaNum</a></li>
+            <li><a href="#s.standardize">standardize</a></li>
+            <li><a href="#s.toHyperE">toHyperE</a></li>
+            <li><a href="#s.toJSON">toJSON</a></li>
+            <li><a href="#s.toNumber">toNumber</a></li>
+            <li><a href="#s.toString">toString</a></li>
+          </ul>
+      </ul>
+    </div>
+    <div style="font-size:12px">This document uses Rainbow with rainbow.css for syntax highlighting.</div>
+    <h2 id="p">Properties</h2>
+    <h3 id="p.array">array</h3>
+    <p>
+      An array of integers that stores a part of the magnitude of ExpantaNum.<br>
+      Array [[a<sub>0</sub>,b<sub>0</sub>],[a<sub>1</sub>,b<sub>1</sub>],[a<sub>2</sub>,b<sub>2</sub>],[a<sub>3</sub>,b<sub>3</sub>],...] represents the magnitude, conditionally:
+      <ul>
+        <li>...(10{a<sub>3</sub>})<sup>b<sub>3</sub></sup>(10{a<sub>2</sub>})<sup>b<sub>2</sub></sup>(10{a<sub>1</sub>})<sup>b<sub>1</sub></sup>b<sub>0</sub> if a<sub>0</sub>=0</li>
+        <li>...(10{a<sub>3</sub>})<sup>b<sub>3</sub></sup>(10{a<sub>2</sub>})<sup>b<sub>2</sub></sup>(10{a<sub>1</sub>})<sup>b<sub>1</sub></sup>(10{a<sub>0</sub>})<sup>b<sub>0</sub></sup>10 otherwise</li>
+      </ul>
+      It is always standardized to meet the following requirements(the value must be equivalent):
+      <ul>
+        <li>There are at least 1 element.</li>
+        <li>If there are 1 element:
+          <ul>
+            <li>b<sub>0</sub>=Infinity, or</li>
+            <li>b<sub>0</sub>=NaN, or</li>
+            <li>layer=0 and b<sub>0</sub> is a Number greater than or equal to 0 and less than or equal to 9007199254740991.</li>
+          </ul>
+        </li>
+        <li>Else:
+          <ul>
+            WIP
+          </ul>
+        </li>
+      </ul>
+    </p>
+    <h3 id="p.layer">layer</h3>
+    <p>
+      Number representing a part of the magnitude of ExpantaNum. An integer greater than or equal to 0 and less than or equal to 9007199254740991. Together with array, it represents J<sup>layer</sup> [value represented by array], where Jx=10{x}10.
+    </p>
+    <h3 id="p.sign">sign</h3>
+    <p>
+      Number representing the sign of ExpantaNum. Either 1 or -1. 1 means positive, -1 means negative.
+    </p>
+    <h2 id="m">Methods (Arithmetic)</h2>
+    <h3 id="a.abs">absoluteValue abs</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.absoluteValue(x), ExpantaNum.abs(x)<br>
+        Instance: &lt;ExpantaNum&gt;.absoluteValue(), &lt;ExpantaNum&gt;.abs()
+      </div>
+      Returns the absolute value of method.
+      <pre><code data-language="javascript">
+        ExpantaNum("10^^ee5").abs().toString() //"10^^ee5"
+        ExpantaNum.abs(-3.7e52).toString() //"3.7e52"
+      </code></pre>
+    </p>
+    <h3 id="a.arrow">arrow</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.arrow(x,z,y)<br>
+        Instance: &lt;ExpantaNum&gt;.arrow(z)(y)
+      </div>
+      For static method, it is in form ExpantaNum.arrow(x,arrows,y), while non-static method is x.arrow(arrows)(y).  Uses linear approximation for real height.
+      <pre><code data-language="javascript">
+        ExpantaNum(13).arrow(3)(5).toString() //"(10^^)^3 (10^)^11 337385711567664.9"
+        ExpantaNum.arrow(6,4,5).toString() //"(10^^^)^3 (10^^)^4 eeee36305.31580191892"
+        ExpantaNum.arrow(6,4,5.001).toString() //"(10^^^)^3 (10^^)^4 eeeeeee394749617.28181416"
+      </code></pre>
+      For non-static method, not having the second parameter will return function of the arrows.
+    </p>
+    <h3 id="a.ceil">ceiling ceil</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.ceiling(x), ExpantaNum.ceil(x)<br>
+        Instance: &lt;ExpantaNum&gt;.ceiling(), &lt;ExpantaNum&gt;.ceil()
+      </div>
+      Returns the ceiling of method.
+      <pre><code data-language="javascript">
+        ExpantaNum(2.34).ceil().toString() //"3"
+        ExpantaNum.ceil(-24.32).toString() //"-24"
+      </code></pre>
+    </p>
+    <h3 id="a.cmp">compareTo cmp</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.compare(x,y), ExpantaNum.cmp(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.compareTo(y), &lt;ExpantaNum&gt;.cmp(y)
+      </div>
+      Compares two numbers, returns 1 if greater, 0 if equal, and -1 if less than.
+      <pre><code data-language="javascript">
+        ExpantaNum(5).cmp(3) //1
+        ExpantaNum.cmp(-8,3) //-1
+        ExpantaNum.cmp(6,6) //0
+      </code></pre>
+    </p>
+    <h3 id="a.cbrt">cubeRoot cbrt</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.cubeRoot(x), ExpantaNum.cbrt(x)<br>
+        Instance: &lt;ExpantaNum&gt;.cubeRoot(), &lt;ExpantaNum&gt;.cbrt()
+      </div>
+      Returns the cube root of the number.
+      <pre><code data-language="javascript">
+        ExpantaNum(5).cbrt().toNumber() //1.709975946676697
+        ExpantaNum.cbrt(-4).toNumber() //-1.5874010519681994
+        ExpantaNum.cbrt(3).toNumber() //1.4422495703074083
+      </code></pre>
+    </p>
+    <h3 id="a.div">divide div</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.divide(x,y), ExpantaNum.div(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.divide(y), &lt;ExpantaNum&gt;.div(y)
+      </div>
+      Divides number by another.
+      <pre><code data-language="javascript">
+        ExpantaNum.div(6,2).toString() //"3"
+        ExpantaNum.div("ee5",2).toString() //"4.999999999978076e99999"
+        ExpantaNum.div("ee5","-10^^3").toString() //"-0"
+      </code></pre>
+      That impresision tho
+    </p>
+    <h3 id="a.eq">equalsTo eq</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.equalsTo(x,y), ExpantaNum.eq(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.equalsTo(y), &lt;ExpantaNum&gt;.abs(y)
+      </div>
+      Returns whether two numbers are equal.
+      <pre><code data-language="javascript">
+        ExpantaNum.div(5,5) //true
+        ExpantaNum.div(0,120) //false
+        ExpantaNum.div("10^^e16",[16,1,1]) //true
+      </code></pre>
+    </p>
+    <h3 id="a.exp">exponential exp</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.exponential(x), ExpantaNum.exp(x)<br>
+        Instance: &lt;ExpantaNum&gt;.exponential(), &lt;ExpantaNum&gt;.exp()
+      </div>
+      exp function. exp(x)=e<sup>x</sup>
+      <pre><code data-language="javascript">
+        ExpantaNum.exp(5).toString() //"148.41315910257657"
+        ExpantaNum.exp(1e+200).toString() //"e4.342944819032647e199"
+        ExpantaNum.exp("10^^100").toString() //"22026.465794806707"
+      </code></pre>
+      What the hell happened
+    </p>
+    <h3 id="a.fact">factorial fact</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.factorial(x), ExpantaNum.fact(x)<br>
+        Instance: &lt;ExpantaNum&gt;.factorial(), &lt;ExpantaNum&gt;.fact()
+      </div>
+      Factorial. Currently, it does not support non-integer input.
+      <pre><code data-language="javascript">
+        ExpantaNum.fact(10).toString() //"3628800"
+        ExpantaNum.fact(1e100).toString() //"e9.956570551809593e101"
+      </code></pre>
+    </p>
+    <h3 id="a.floor">floor</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.floor(x)<br>
+        Instance: &lt;ExpantaNum&gt;.floor()
+      </div>
+      Returns floor of number.
+      <pre><code data-language="javascript">
+        ExpantaNum.floor(12.7).toString() //"12"
+        ExpantaNum.floor("ee5e23").toString() //"eee23.69897000433602"
+      </code></pre>
+    </p>
+    <h3 id="a.gamma">gamma</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.gamma(x)<br>
+        Instance: &lt;ExpantaNum&gt;.gamma()
+      </div>
+      Applies <a href="https://en.wikipedia.org/wiki/Gamma_function">Gamma function</a>.
+      <pre><code data-language="javascript">
+        ExpantaNum.gamma(0.5).toString() //"2"
+        ExpantaNum.gamma(5).toString() //"24.00018258045251"
+        ExpantaNum.gamma(1e50).toString() //"e4.956570551809682e51"
+      </code></pre>
+    </p>
+    <h3 id="a.log10">generalLogarithm log10</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.generalLogarithm(x), ExpantaNum.log10(x)<br>
+        Instance: &lt;ExpantaNum&gt;.generalLogarithm(), &lt;ExpantaNum&gt;.log10()
+      </div>
+      Returns general logarithm(log base 10) of number.
+      <pre><code data-language="javascript">
+        ExpantaNum.log10(62.69).toString() //"1.797198269838959"
+        ExpantaNum.log10("eee6.19").toString() //"4.15826806220026e1548816"
+      </code></pre>
+    </p>
+    <h3 id="a.gt">greaterThan gt</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.greaterThan(x,y), ExpantaNum.gt(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.greaterThan(x,y), &lt;ExpantaNum&gt;.gt(x,y)
+      </div>
+      Returns whether number is greater than other.
+      <pre><code data-language="javascript">
+        ExpantaNum.gt(102,512) //false
+        ExpantaNum.gt("ee4e5923","e43.348") //true
+        ExpantaNum.gt(5,5) //false
+      </code></pre>
+    </p>
+    <h3 id="a.gte">greaterThanOrEqualTo gte</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.greaterThanOrEqualTo(x,y), ExpantaNum.gte(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.greaterThanOrEqualTo(y), &lt;ExpantaNum&gt;.gte(y)
+      </div>
+      Returns whether number is greater than or equal to other.
+      <pre><code data-language="javascript">
+        ExpantaNum.gt(102,512) //false
+        ExpantaNum.gt("ee4e5923","e43.348") //true
+        ExpantaNum.gt(5,5) //true
+      </code></pre>
+    </p>
+    <h3 id="a.hyper">hyper</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.hyper(z)(x,y)<br>
+        Instance: <span style="color:red">None</span>
+      </div>
+      Static only. ExpantaNum.hyper(z)(x,y)=hyper-z(x,y).
+      <pre><code data-language="javascript">
+        ExpantaNum.hyper(4)(4,2).toString() //"256"
+        ExpantaNum.hyper(12)(923,592).toString() //"(10{9})^590 (10{8})^921 (10{7})^921 (10{6})^921 (10{5})^921 (10^^^^)^921 (10^^^)^921 (10^^)^921 (10^)^922 2737.3532242875053"
+      </code></pre>
+    </p>
+    <h3 id="a.isFinite">isFinite</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.isFinite(x)<br>
+        Instance: &lt;ExpantaNum&gt;.isFinite()
+      </div>
+      Returns whether number is finite.
+      <pre><code data-language="javascript">
+        ExpantaNum.isFinite(6) //true
+        ExpantaNum.isFinite(NaN) //false
+        ExpantaNum.isFinite(Infinity) //false
+      </code></pre>
+    </p>
+    <h3 id="a.isInfinite">isInfinite</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.isInfinite(x)<br>
+        Instance: &lt;ExpantaNum&gt;.isInfinite()
+      </div>
+      Returns whether number is infinite.
+      <pre><code data-language="javascript">
+        ExpantaNum.isInfinite(6) //false
+        ExpantaNum.isInfinite(NaN) //false
+        ExpantaNum.isInfinite(Infinity) //true
+      </code></pre>
+    </p>
+    <h3 id="a.isint">isInteger isint</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.isInteger(x), ExpantaNum.isint(x)<br>
+        Instance: &lt;ExpantaNum&gt;.isInteger(), &lt;ExpantaNum&gt;.isint()
+      </div>
+      Returns whether number is an integer.
+      <pre><code data-language="javascript">
+        ExpantaNum.isint(4) //true
+        ExpantaNum.isint(8.2) //false
+      </code></pre>
+    </p>
+    <h3 id="a.isNaN">isNaN</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.isNaN(x)<br>
+        Instance: &lt;ExpantaNum&gt;.isNaN()
+      </div>
+      Returns whether number is NaN.
+      <pre><code data-language="javascript">
+        ExpantaNum.isNaN(3) //false
+        ExpantaNum.isNaN(NaN) //true
+      </code></pre>
+    </p>
+    <h3 id="a.isneg">isNegative isneg</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.isNegative(x), ExpantaNum.isNeg(x)<br>
+        Instance: &lt;ExpantaNum&gt;.isNegative(), &lt;ExpantaNum&gt;.isNeg()
+      </div>
+      Returns whether number is negative.
+      <pre><code data-language="javascript">
+        ExpantaNum.isNaN(5) //false
+        ExpantaNum.isNaN(-3) //true
+      </code></pre>
+    </p>
+    <h3 id="a.ispos">isPositive ispos</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.isPositive(x), ExpantaNum.ispos(x)<br>
+        Instance: &lt;ExpantaNum&gt;.isPositive(), &lt;ExpantaNum&gt;.ispos()
+      </div>
+      Returns whether number is positive.
+      <pre><code data-language="javascript">
+        ExpantaNum.isNaN(5) //true
+        ExpantaNum.isNaN(-3) //false
+      </code></pre>
+    </p>
+    <h3 id="a.lambertw">lambertw</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.lambertw(x)<br>
+        Instance: &lt;ExpantaNum&gt;.lambertw()
+      </div>
+      Applies <a href="https://en.wikipedia.org/wiki/Lambert_W_function">Lambert W function</a>.
+      <pre><code data-language="javascript">
+        ExpantaNum.lambert(-0.1).toString() //"-0.11183255915896297"
+        ExpantaNum.lambert(1).toString() //"0.5671432904097838"
+        ExpantaNum.lambert(10).toString() //"1.7455280027406992"
+      </code></pre>
+    </p>
+    <h3 id="a.lt">lessThan lt</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.lessThan(x,y), ExpantaNum.lt(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.lessThan(y), &lt;ExpantaNum&gt;.lt(y)
+      </div>
+      Returns whether number is less than other.
+      <pre><code data-language="javascript">
+        ExpantaNum.gt(102,512) //true
+        ExpantaNum.gt("ee4e5923","e43.348") //false
+        ExpantaNum.gt(5,5) //false
+      </code></pre>
+    </p>
+    <h3 id="a.lt">lessThanOrEqualTo lte</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.lessThanOrEqualTo(x,y), ExpantaNum.lte(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.lessThanOrEqualTo(y), &lt;ExpantaNum&gt;.lte(y)
+      </div>
+      Returns whether number is less than or equal to other.
+      <pre><code data-language="javascript">
+        ExpantaNum.gt(102,512) //true
+        ExpantaNum.gt("ee4e5923","e43.348") //false
+        ExpantaNum.gt(5,5) //true
+      </code></pre>
+    </p>
+    <h3 id="a.logBase">logarithm logBase</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.logarithm(x[,y]), ExpantaNum.logBase(x[,y])<br>
+        Instance: &lt;ExpantaNum&gt;.logarithm([y]), &lt;ExpantaNum&gt;.logBase([y])
+      </div>
+      Returns logarithm of number with a base.
+      <pre><code data-language="javascript">
+        ExpantaNum(3).logBase(2).toString() //"1.584962500721156"
+        ExpantaNum.logBase("e3.5e393",5891).toString() //"9.283354173739596e392"
+      </code></pre>
+    </p>
+    <h3 id="a.sub">minus sub</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.minus(x,y), ExpantaNum.sub(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.minus(y), &lt;ExpantaNum&gt;.sub(y)
+      </div>
+      Subtraction.
+      <pre><code data-language="javascript">
+        ExpantaNum.sub(634,623).toString() //"11"
+        ExpantaNum.sub("ee6.238","ee6.239").toString() //"-9.948420585793617e1733803"
+      </code></pre>
+    </p>
+    <h3 id="a.mod">modular mod</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.modular(x,y), ExpantaNum.mod(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.modular(y), &lt;ExpantaNum&gt;.mod(y)
+      </div>
+      Modulo operation without floor.
+      <pre><code data-language="javascript">
+        ExpantaNum.mod(32,7).toString() //"4"
+        ExpantaNum.mod("e13.523",6232).toString() //"1683.47265625"
+      </code></pre>
+    </p>
+    <h3 id="a.ln">naturalLogarithm log ln</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.naturalLogarithm(x), ExpantaNum.log(x), ExpantaNum.ln(x)<br>
+        Instance: &lt;ExpantaNum&gt;.naturalLogarithm(), &lt;ExpantaNum&gt;.log(), &lt;ExpantaNum&gt;ln()
+      </div>
+      Returns the natural logaritha.
+      <pre><code data-language="javascript">
+        ExpantaNum.ln(382.42).toString() //"5.946519481064813"
+        ExpantaNum.ln("eee1").toString() //"23025850929.940456"
+      </code></pre>
+    </p>
+    <h3 id="a.neg">negate neg</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.negate(x), ExpantaNum.neg(x)<br>
+        Instance: &lt;ExpantaNum&gt;.negate(), &lt;ExpantaNum&gt;.neg()
+      </div>
+      Returns the negated value.
+      <pre><code data-language="javascript">
+        ExpantaNum.neg(523).toString() //"-523"
+        ExpantaNum.neg(-921.3).toString() //"-921.3"
+      </code></pre>
+    </p>
+    <h3 id="a.pent">pentate pent</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.pentate(x,y), ExpantaNum.pent(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.pentate(y), &lt;ExpantaNum&gt;.pent(y)
+      </div>
+      Pentation. Uses linear approximation for real height.
+      <pre><code data-language="javascript">
+        ExpantaNum.pent(3,3).toString() //"(10^)^7625597484984 3638334640023.7783"
+        ExpantaNum.pent(3,3.1).toString() //"10^^1.0184927774689214e591"
+        ExpantaNum.pent("e5e18","ee5e10").toString() //"10^^^e1e50000000000"
+      </code></pre>
+    </p>
+    <h3 id="a.add">plus add</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.plus(x,y), ExpantaNum.add(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.plus(y), &lt;ExpantaNum&gt;.add(y)
+      </div>
+      Addition.
+      <pre><code data-language="javascript">
+        ExpantaNum.add(63942334,"e16.523").toString() //"3.334264134026562e16"
+        ExpantaNum.add(3923,-34823).toString() //"-30900"
+      </code></pre>
+    </p>
+    <h3 id="a.rec">reciprocate rec</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.reciprocate(x), ExpantaNum.rec(x)<br>
+        Instance: &lt;ExpantaNum&gt;.reciprocate(), &lt;ExpantaNum&gt;.rec()
+      </div>
+      Returns the reciprocal.
+      <pre><code data-language="javascript">
+        ExpantaNum.rec(432).toString() //"0.0023148148148148147"
+        ExpantaNum.rec(-0.00045).toString() //"-2222.222222222222"
+      </code></pre>
+    </p>
+    <h3 id="a.root">root</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.root(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.root(y)
+      </div>
+      Returns the y-th root of x.
+      <pre><code data-language="javascript">
+        ExpantaNum.root(523,4).toString() //"4.782174531743749"
+        ExpantaNum.root(252.43,7).toString() //"2.203753399900375"
+      </code></pre>
+    </p>
+    <h3 id="a.round">round</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.round(x)<br>
+        Instance: &lt;ExpantaNum&gt;.round()
+      </div>
+      Returns the rounded number.
+      <pre><code data-language="javascript">
+        ExpantaNum.round(52.32).toString() //"52"
+        ExpantaNum.round(-68.23).toString() //"-68"
+      </code></pre>
+    </p>
+    <h3 id="a.slog">slog</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.slog(x[,y])<br>
+        Instance: &lt;ExpantaNum&gt;.slog([y])
+      </div>
+      Applies <a href="https://en.wikipedia.org/wiki/Tetration#Super-logarithm">super-logarithm</a>. Uses linear approximation for real height.
+      <pre><code data-language="javascript">
+        ExpantaNum.slog(0,10).toString() //"-1"
+        ExpantaNum.slog(2,10).toString() //"0.30102999566398125"
+        ExpantaNum.slog(3814279.1047601975,Math.E).toString() //"3"
+      </code></pre>
+    <h3 id="a.sqrt">squareRoot sqrt</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.squareRoot(x), ExpantaNum.sqrt(x)<br>
+        Instance: &lt;ExpantaNum&gt;.squareRoot(), &lt;ExpantaNum&gt;.sqrt()
+      </div>
+      Returns the square root.
+      <pre><code data-language="javascript">
+        ExpantaNum.sqrt(16).toString() //"4"
+        ExpantaNum.sqrt("e5e10").toString() //"1e25000000000"
+        ExpantaNum.sqrt(-1).toString() //"NaN"
+      </code></pre>
+    <h3 id="a.ssrt">ssqrt ssrt</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.ssqrt(x), ExpantaNum.ssrt(x)<br>
+        Instance: &lt;ExpantaNum&gt;.ssqrt(), &lt;ExpantaNum&gt;.ssrt()
+      </div>
+      Applies <a href="https://en.wikipedia.org/wiki/Tetration#Square_super-root">square super-root</a>.
+      <pre><code data-language="javascript">
+        ExpantaNum.ssrt(2).toString() //"1.5596104694623696"
+        ExpantaNum.ssrt(27).toString() //"3.0000000000000004"
+        ExpantaNum.ssrt("ee50").toString() //"2.0697116195395227e48"
+      </code></pre>
+    </p>
+    <h3 id="a.tetr">tetrate tetr</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.tetrate(x,y), ExpantaNum.tetr(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.tetrate(y), &lt;ExpantaNum&gt;.tetr(y)
+      </div>
+      <a href="https://googology.wikia.com/wiki/Tetration">Tetration</a>. Uses linear approximation for real height.
+      <pre><code data-language="javascript">
+        ExpantaNum.tetr(3,3).toString() //"7625597484987"
+        ExpantaNum.tetr(10,2.5).toString() //"1.0972406760152253e1453"
+        ExpantaNum.tetr("e5e52",512).toString() //"(10^)^513 52.69897000433602"
+        ExpantaNum.tetr(1.2,Infinity).toString() //"1.2577345413765264"
+      </code></pre>
+    </p>
+    <h3 id="a.mul">times mul</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.times(x,y), ExpantaNum.mul(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.times(y), &lt;ExpantaNum&gt;.mul(y)
+      </div>
+      Multiplication.
+      <pre><code data-language="javascript">
+        ExpantaNum.mul(120,5).toString() //"600"
+        ExpantaNum.mul("e8e12","e2e13").toString() //"1e28000000000000"
+      </code></pre>
+    </p>
+    <h3 id="a.pow">toPower pow</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.toPower(x,y), ExpantaNum.pow(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.toPower(y), &lt;ExpantaNum&gt;.pow(y)
+      </div>
+      Exponentiation.
+      <pre><code data-language="javascript">
+        ExpantaNum.pow(5,5).toString() //"3125"
+        ExpantaNum.pow("e2e9","e5e9").toString() //"e2.0000007521745653e5000000009"
+      </code></pre>
+    </p>
+    <h2 id="s">Methods (System)</h2>
+    <h3 id="s.fromArray">fromArray</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.fromArray(x[,y])<br>
+        Instance: <span style="color:red">None</span>
+      </div>
+      Takes an Array and optionally a Boolean, and return an ExpantaNum with given properties.
+    </p>
+    <h3 id="s.fromHyperE">fromHyperE</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.fromHyperE(x)<br>
+        Instance: <span style="color:red">None</span>
+      </div>
+      Takes a String representing <a href="https://googology.wikia.org/wiki/Hyper-E_notation">Hyper-E Notation</a> and return an ExpantaNum with the corresponding value.<br>
+      Hyper-E notation syntax:<br>
+      <pre style="border:1px dotted black">
+&lt;syntax&gt;          ::= &lt;signs&gt; &lt;unsigned-syntax&gt;
+&lt;unsigned-syntax&gt; ::= &lt;special&gt; | &lt;decimal&gt; | "E" &lt;inside&gt;
+&lt;inside&gt;          ::= &lt;decimal&gt; | &lt;inside&gt; "#" &lt;decimal&gt;
+&lt;special&gt;         ::= "Infinity" | "NaN"
+&lt;signs&gt;           ::= "" | &lt;signs&gt; &lt;sign&gt;
+&lt;sign&gt;            ::= "+" | "-"
+&lt;decimal&gt;         ::= &lt;integer&gt; | &lt;integer&gt; "." | "." &lt;integer&gt; | &lt;integer&gt; "." &lt;integer&gt;
+&lt;integer&gt;         ::= "0" | &lt;nonzero-integer&gt;
+&lt;nonzero-integer&gt; ::= &lt;digit&gt; | &lt;nonzero-integer&gt; &lt;digit&gt;
+&lt;digit&gt;           ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"</pre>
+    </p>
+    <h3 id="s.fromJSON">fromJSON</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.fromJSON(x)<br>
+        Instance: <span style="color:red">None</span>
+      </div>
+      Takes a JSON in String and returns the corresponding ExpantaNum.
+    </p>
+    <h3 id="s.fromNumber">fromNumber</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.fromNumber(x)<br>
+        Instance: <span style="color:red">None</span>
+      </div>
+      Takes a Number and returns the corresponding ExpantaNum.
+    </p>
+    <h3 id="s.fromObject">fromObject</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.fromObject(x)<br>
+        Instance: <span style="color:red">None</span>
+      </div>
+      Takes an Object and returns the corresponding ExpantaNum.
+    </p>
+    <h3 id="s.fromString">fromString</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.fromString(x)<br>
+        Instance: <span style="color:red">None</span>
+      </div>
+      Takes a String. If it is a Hyper-E notation or is a JSON, uses the corresponding function instead.<br>
+      Notation syntax otherwise:<br>
+      <pre style="border:1px dotted black">
+&lt;syntax&gt;              ::= &lt;signs&gt; &lt;unsigned-syntax&gt;
+&lt;unsigned-syntax&gt;     ::= &lt;special&gt; | &lt;psi-j-syntax&gt; &lt;left-syntax&gt; &lt;scientific-notation&gt;
+&lt;psi-j-syntax&gt;        ::= "" | &lt;psi-j-syntax1&gt; | &lt;psi-j-syntax2&gt;
+&lt;psi-j-syntax1&gt;       ::= "J" | "J" &lt;psi-j-syntax1&gt;
+&lt;psi-j-syntax2&gt;       ::= "J^" &lt;integer&lt;
+&lt;left-syntax&gt;         ::= "" | &lt;operator-part&gt; &lt;left-syntax&gt;
+&lt;operator-part&gt;       ::= &lt;operator-with-ten&gt; | "(" &lt;operator-with-ten&gt; ")^" &lt;nonzero-integer&gt; " "
+&lt;operator-with-ten&gt;   ::= "10" &lt;hyper-operator&gt;
+&lt;hyper-operator&gt;      ::= &lt;arrows&gt; | &lt;beaf-operator&gt;
+&lt;beaf-operator&gt;       ::= "{" &lt;nonzero-integer&gt; "}"
+&lt;arrows&gt;              ::= "^" | &lt;arrows&gt; "^"
+&lt;scientific-notation&gt; ::= &lt;signed-decimal&gt; | &lt;signed-decimal&gt; &lt;exponential&gt; &lt;scientific-notation&gt;
+&lt;signed-decimal&gt;      ::= &lt;signs&gt; &lt;decimal&gt;
+&lt;exponential&gt;         ::= "e" | "E"
+&lt;special&gt;             ::= "Infinity" | "NaN"
+&lt;signs&gt;               ::= "" | &lt;signs&gt; &lt;sign&gt;
+&lt;sign&gt;                ::= "+" | "-"
+&lt;decimal&gt;             ::= &lt;integer&gt; | &lt;integer&gt; "." | &lt;integer&gt; "." &lt;integer&gt;
+&lt;integer&gt;             ::= "0" | &lt;nonzero-integer&gt;
+&lt;nonzero-integer&gt;     ::= &lt;digit&gt; | &lt;nonzero-integer&gt; &lt;digit&gt;
+&lt;digit&gt;               ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"</pre>
+    </p>
+    <h3 id="s.ExpantaNum">ExpantaNum</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.ExpantaNum(x[,y]), ExpantaNum(x[,y])<br>
+        Instance: <span style="color:red">None</span>
+      </div>
+      The constructor of ExpantaNum. Chooses and performs from fromArray, fromHyperE, fromJSON, fromNumber, fromObject, or fromString accordingly.
+    </p>
+    <h3 id="s.standardize">standardize</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: <span style="color:red">None</span><br>
+        Instance: &lt;ExpantaNum&gt;.standardize()
+      </div>
+      Standardize the properties to match the requirements. Automatically executed on performing methods. Mutating method.
+    </p>
+    <h3 id="s.toHyperE">toHyperE</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: <span style="color:red">None</span><br>
+        Instance: &lt;ExpantaNum&gt;.toHyperE()
+      </div>
+      Converts into <a href="https://googology.wikia.org/wiki/Hyper-E_notation">Hyper-E Notation</a>.
+      <pre><code data-language="javascript">
+        ExpantaNum(52).toHyperE() //"52"
+        ExpantaNum("eee30").toHyperE() //"E30#3"
+      </code></pre>
+    </p>
+    <h3 id="s.toJSON">toJSON</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: <span style="color:red">None</span><br>
+        Instance: &lt;ExpantaNum&gt;.toJSON()
+      </div>
+      Converts into Object with property "array" and "sign".
+      <pre><code data-language="javascript">
+        ExpantaNum(52).toJSON() //{array:[52],sign:1}
+        ExpantaNum("eee30").toJSON() //{array:[30,3],sign:1}
+      </code></pre>
+    </p>
+    <h3 id="s.toNumber">toNumber</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: <span style="color:red">None</span><br>
+        Instance: &lt;ExpantaNum&gt;.toNumber()
+      </div>
+      Converts the number into Number.
+      <pre><code data-language="javascript">
+        ExpantaNum(52).toNumber() //52
+        ExpantaNum("eee30").toNumber() //Infinity
+      </code></pre>
+    </p>
+    <h3 id="s.toString">toString</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: <span style="color:red">None</span><br>
+        Instance: &lt;ExpantaNum&gt;.toString()
+      </div>
+      Converts the number into String.
+      <pre><code data-language="javascript">
+        ExpantaNum(100).toString() //"100"
+        ExpantaNum([5,3,2,0,0,1]).toString() //"10{5}(10^^)^2 e1e100000"
+      </code></pre>
+    </p>
+  </body>
+</html>
