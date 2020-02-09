@@ -35,6 +35,7 @@
             <li><a href="#a.cbrt">cubeRoot cbrt</a></li>
             <li><a href="#a.div">divide div</a></li>
             <li><a href="#a.eq">equalsTo eq</a></li>
+            <li><a href="#a.expansion">expansion</a></li>
             <li><a href="#a.exp">exponential exp</a></li>
             <li><a href="#a.fact">factorial fact</a></li>
             <li><a href="#a.floor">floor</a></li>
@@ -214,6 +215,19 @@
         ExpantaNum.div("10^^e16",[16,1,1]) //true
       </code></pre>
     </p>
+    <h3 id="a.expansion">expansion</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.expansion(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.expansion(y)
+      </div>
+      exp function. exp(x)=e<sup>x</sup>
+      <pre><code data-language="javascript">
+        ExpantaNum.expansion(2,1).toString() //"2"
+        ExpantaNum.expansion(2,10).toString() //"4"
+        ExpantaNum.expansion(3,64).toString() //"J^62 (10^)^7625597484984 3638334640023.7783"
+      </code></pre>
+    </p>
     <h3 id="a.exp">exponential exp</h3>
     <p>
       <div style="border:1px dashed black">
@@ -224,9 +238,8 @@
       <pre><code data-language="javascript">
         ExpantaNum.exp(5).toString() //"148.41315910257657"
         ExpantaNum.exp(1e+200).toString() //"e4.342944819032647e199"
-        ExpantaNum.exp("10^^100").toString() //"22026.465794806707"
+        ExpantaNum.exp("10^^100").toString() //"(10^)^99 10000000000"
       </code></pre>
-      What the hell happened
     </p>
     <h3 id="a.fact">factorial fact</h3>
     <p>
