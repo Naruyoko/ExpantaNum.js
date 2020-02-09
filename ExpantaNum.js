@@ -39,7 +39,7 @@
       // NONE   0 Show no information.
       // NORMAL 1 Show operations.
       // ALL    2 Show everything.
-      debug: 1
+      debug: 0
     },
 
 
@@ -77,6 +77,7 @@
    *  cubeRoot                  cbrt
    *  divide                    div
    *  equals                    eq
+   *  expansion
    *  exponential               exp
    *  factorial                 fact
    *  floor
@@ -467,7 +468,7 @@
     var x=this.clone();
     if (x.gt(ExpantaNum.TETRATED_MAX_SAFE_INTEGER)) return x;
     if (x.gt(ExpantaNum.E_MAX_SAFE_INTEGER)) return ExpantaNum.exp(x);
-    if (x.gt(MAX_SAFE_INTEGER)) return ExpantaNum.exp(ExpantaNum.mul(x,ExpantaNum.ln(x).sub(1)));
+    if (x.gt(ExpantaNum.MAX_SAFE_INTEGER)) return ExpantaNum.exp(ExpantaNum.mul(x,ExpantaNum.ln(x).sub(1)));
     var n=x.operator(0);
     if (n>1){
       if (n<24) return new ExpantaNum(f_gamma(x.sign*n));
@@ -674,7 +675,7 @@
       x.operator(1,x.operator(1)-1);
       return x;
     }
-    if (x.gt(MAX_SAFE_INTEGER)) return d_lambertw(x);
+    if (x.gt(ExpantaNum.MAX_SAFE_INTEGER)) return d_lambertw(x);
     else return new ExpantaNum(f_lambertw(x.sign*x.operator(0)));
   };
   Q.lambertw=function (x){
@@ -712,7 +713,7 @@
     }
     var m=t.max(other);
     if (m.gt("10^^^"+MAX_SAFE_INTEGER)) return m;
-    if (other.gt(MAX_SAFE_INTEGER)){
+    if (other.gt(ExpantaNum.MAX_SAFE_INTEGER)){
       if (this.lt(Math.exp(1/Math.E))){
         var negln = t.ln().neg();
         return negln.lambertw().div(negln);
@@ -858,7 +859,7 @@
       }
       if (other.eq(2)) return t.arrow(arrows-1)(t,depth+1);
       if (t.max(other).gt("10{"+arrows.add(ExpantaNum.ONE)+"}"+MAX_SAFE_INTEGER)) return t.max(other);
-      if (other.gt(MAX_SAFE_INTEGER)){
+      if (other.gt(ExpantaNum.MAX_SAFE_INTEGER)){
         if (t.gt("10{"+arrows+"}"+MAX_SAFE_INTEGER)){
           r=t.clone();
           r.operator(arrows,r.operator(arrows)-1);
@@ -905,6 +906,32 @@
     if (z.eq(ExpantaNum.ZERO)) return function(x,y){return new ExpantaNum(y).eq(ExpantaNum.ZERO)?new ExpantaNum(x):new ExpantaNum(x).add(ExpantaNum.ONE);};
     if (z.eq(ExpantaNum.ONE)) return function(x,y){return ExpantaNum.add(x,y);};
     return function(x,y){return new ExpantaNum(x).arrow(z.sub(2))(y);};
+  };
+  P.expansion=function (other){
+    var t=this.clone();
+    other=new ExpantaNum(other);
+    var r;
+    if (ExpantaNum.debug>=ExpantaNum.NORMAL) console.log("{"+t+","+other+",1,2}");
+    if (other.lte(ExpantaNum.ZERO)||!other.isint()) return ExpantaNum.NaN.clone();
+    if (other.eq(ExpantaNum.ONE)) return t.clone();
+    if (!t.isint()) return ExpantaNum.NaN.clone();
+    if (t.eq(2)) return ExpantaNum(4);
+    if (other.gt(ExpantaNum.MAX_SAFE_INTEGER)) return ExpantaNum.POSITIVE_INFINITY.clone();
+    var f=other.toNumber()-1;
+    r=t;
+    for (var i=0;f!==0&&r.lt(ExpantaNum.MAX_SAFE_INTEGER)&&i<100;++i){
+      if (f>0){
+        r=t.arrow(r)(t);
+        --f;
+      }
+    }
+    if (i==100) f=0;
+    r.layer+=f;
+    r.standardize();
+    return r;
+  };
+  Q.expansion=function (x,y){
+    return new ExpantaNum(x).expansion(y);
   };
   // All of these are from Patashu's break_eternity.js
   Q.affordGeometricSeries = function (resourcesAvailable, priceStart, priceRatio, currentOwned) {
@@ -981,6 +1008,11 @@
     if (x.sign!=1&&x.sign!=-1){
       if (typeof x.sign!="number") x.sign=Number(x.sign);
       x.sign=x.sign<0?-1:1;
+    }
+    if (x.layer>MAX_SAFE_INTEGER){
+      x.array=[[0,Infinity]];
+      x.layer=0;
+      return x;
     }
     for (var i=0;i<x.array.length;++i){
       var e=x.array[i];
