@@ -1,4 +1,4 @@
-# ![ExpantaNum.js](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/ExpantaNumJS.png) ![α](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/alpha.png) ![1](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/1.png) ![.](https://raw.githubusercontent.com/Naruyoko/OmegaNum.js/non-code/dot.png) ![0](https://raw.githubusercontent.com/Naruyoko/OmegaNum.js/non-code/0.png) ![.](https://raw.githubusercontent.com/Naruyoko/OmegaNum.js/non-code/dot.png) ![1](https://raw.githubusercontent.com/Naruyoko/OmegaNum.js/non-code/1.png)
+# ![ExpantaNum.js](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/ExpantaNumJS.png) ![α](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/alpha.png) ![1](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/1.png) ![.](https://raw.githubusercontent.com/Naruyoko/OmegaNum.js/non-code/dot.png) ![1](https://raw.githubusercontent.com/Naruyoko/OmegaNum.js/non-code/1.png)
 [![NPM](https://img.shields.io/npm/v/expanta_num.js.svg)](https://www.npmjs.com/package/expanta_num.js)
 A huge number library holding up to {10,9e15,1,2}.
 

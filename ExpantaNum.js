@@ -100,6 +100,7 @@
    *  modulo                    mod
    *  naturalLogarithm          ln        log
    *  negated                   neg
+   *  notequals                 neq
    *  pentate                   pent
    *  plus                      add
    *  reciprocate               rec
@@ -231,6 +232,12 @@
   };
   Q.equalsTo=Q.equal=Q.eq=function (x,y){
     return new ExpantaNum(x).eq(y);
+  };
+  P.notEqualsTo=P.notEqual=P.neq=function (other){
+    return this.cmp(other)!==0;
+  };
+  Q.notEqualsTo=Q.notEqual=Q.neq=function (x,y){
+    return new ExpantaNum(x).neq(y);
   };
   P.minimum=P.min=function (other){
     return this.lt(other)?this.clone():new ExpantaNum(other);
@@ -592,7 +599,7 @@
     if (ExpantaNum.debug>=ExpantaNum.NORMAL) console.log("log"+this);
     if (x.lt(ExpantaNum.ZERO)) return ExpantaNum.NaN.clone();
     if (x.eq(ExpantaNum.ZERO)) return ExpantaNum.NEGATIVE_INFINITY.clone();
-    if (x.lt(MAX_SAFE_INTEGER)) return new ExpantaNum(Math.log10(x.toNumber()));
+    if (x.lt(ExpantaNum.MAX_SAFE_INTEGER)) return new ExpantaNum(Math.log10(x.toNumber()));
     if (!x.isFinite()) return x;
     if (x.gt(ExpantaNum.TETRATED_MAX_SAFE_INTEGER)) return x;
     x.operator(1,x.operator(1)-1);
@@ -727,7 +734,7 @@
     var f=Math.floor(y);
     var r=t.pow(y-f);
     var l=ExpantaNum.NaN;
-    for (var i=0,m=new ExpantaNum("e"+MAX_SAFE_INTEGER);f!==0&&r.lt(m)&&i<100;++i){
+    for (var i=0,m=new ExpantaNum(ExpantaNum.E_MAX_SAFE_INTEGER);f!==0&&r.lt(m)&&i<100;++i){
       if (f>0){
         r=t.pow(r);
         if (l.eq(r)){
@@ -1160,17 +1167,20 @@
   P.toHyperE=function (){
     if (this.layer) throw Error(expantaNumError+"Sorry, but this prototype doesn't support correct Hyper-E notation for numbers larger than 10{MSI}10");
     if (this.sign==-1) return "-"+this.abs().toHyperE();
-    if (isNaN(this.array[0])) return "NaN";
-    if (!isFinite(this.array[0])) return "Infinity";
-    if (this.lt(MAX_SAFE_INTEGER)) return String(this.array[0]);
-    if (this.lt("e"+MAX_SAFE_INTEGER)) return "E"+this.array[0];
-    var r="E"+this.array[0]+"#"+this.array[1];
-    for (var i=2;i<this.array.length;++i){
-      r+="#"+(this.array[i]+1);
+    if (isNaN(this.array[0][1])) return "NaN";
+    if (!isFinite(this.array[0][1])) return "Infinity";
+    if (this.lt(ExpantaNum.MAX_SAFE_INTEGER)) return String(this.array[0][1]);
+    if (this.lt(ExpantaNum.E_MAX_SAFE_INTEGER)) return "E"+this.array[0][1];
+    var r="E"+this.operator(0)+"#"+this.operator(1);
+    var l=1;
+    for (var i=Math.ceil(this.getOperatorIndex(2));i<this.array.length;++i){
+      if (l+1<this.array[i][0]) r+="#1".repeat(this.array[i][0]-l-1);
+      l=this.array[i][0];
+      r+="#"+(this.array[i][1]+1);
     }
     if (!this.layer) r=""+r;
     else if (this.layer<3) r="J".repeat(this.layer)+r;
-    else s="J^"+this.layer+r;
+    else r="J^"+this.layer+" "+r;
     return r;
   };
   Q.fromNumber=function (input){
@@ -1575,7 +1585,7 @@
         if (Object.defineProperty){
           Object.defineProperty(obj,prop,{
             configurable: false,
-            enumerable: false,
+            enumerable: true,
             writable: false,
             value: new ExpantaNum(R[prop])
           });
