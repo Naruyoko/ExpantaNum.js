@@ -58,6 +58,7 @@
             <li><a href="#a.mod">modular mod</a></li>
             <li><a href="#a.ln">naturalLogarithm log ln</a></li>
             <li><a href="#a.neg">negate neg</a></li>
+            <li><a href="#a.neq">notEqualsTo neq</a></li>
             <li><a href="#a.pent">pentate pent</a></li>
             <li><a href="#a.add">plus add</a></li>
             <li><a href="#a.rec">reciprocate rec</a></li>
@@ -206,7 +207,7 @@
     <p>
       <div style="border:1px dashed black">
         Static: ExpantaNum.equalsTo(x,y), ExpantaNum.eq(x,y)<br>
-        Instance: &lt;ExpantaNum&gt;.equalsTo(y), &lt;ExpantaNum&gt;.abs(y)
+        Instance: &lt;ExpantaNum&gt;.equalsTo(y), &lt;ExpantaNum&gt;.eq(y)
       </div>
       Returns whether two numbers are equal.
       <pre><code data-language="javascript">
@@ -499,6 +500,19 @@
       <pre><code data-language="javascript">
         ExpantaNum.neg(523).toString() //"-523"
         ExpantaNum.neg(-921.3).toString() //"-921.3"
+      </code></pre>
+    </p>
+    <h3 id="a.neq">notEqualsTo neq</h3>
+    <p>
+      <div style="border:1px dashed black">
+        Static: ExpantaNum.notEqualsTo(x,y), ExpantaNum.notEqual(x,y), ExpantaNum.neq(x,y)<br>
+        Instance: &lt;ExpantaNum&gt;.notEqualsTo(y), &lt;ExpantaNum&gt;.notEqual(y), &lt;ExpantaNum&gt;.neq(y)
+      </div>
+      Returns whether two numbers are not equal.
+      <pre><code data-language="javascript">
+        ExpantaNum.div(5,5) //false
+        ExpantaNum.div(0,120) //true
+        ExpantaNum.div("10^^e16",[16,1,1]) //false
       </code></pre>
     </p>
     <h3 id="a.pent">pentate pent</h3>
