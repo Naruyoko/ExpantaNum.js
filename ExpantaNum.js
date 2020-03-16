@@ -401,7 +401,7 @@
     if (x.isNaN()||other.isNaN()||x.isInfinite()&&other.isInfinite()||x.eq(ExpantaNum.ZERO)&&other.eq(ExpantaNum.ZERO)) return ExpantaNum.NaN.clone();
     if (other.eq(ExpantaNum.ZERO)) return ExpantaNum.POSITIVE_INFINITY.clone();
     if (other.eq(ExpantaNum.ONE)) return x.clone();
-    if (x.eq(other)) return ExpantaNum.ONE.clone()
+    if (x.eq(other)) return ExpantaNum.ONE.clone();
     if (x.isInfinite()) return x;
     if (other.isInfinite()) return ExpantaNum.ZERO.clone();
     if (x.max(other).gt(ExpantaNum.EE_MAX_SAFE_INTEGER)) return x.gt(other)?x.clone():ExpantaNum.ZERO.clone();
@@ -532,7 +532,7 @@
   P.toPower=P.pow=function (other){
     other=new ExpantaNum(other);
     if (ExpantaNum.debug>=ExpantaNum.NORMAL) console.log(this+"^"+other);
-    if (other.eq(ExpantaNum.ZERO)) return ExpantaNum.ONE.clone()
+    if (other.eq(ExpantaNum.ZERO)) return ExpantaNum.ONE.clone();
     if (other.eq(ExpantaNum.ONE)) return this.clone();
     if (other.lt(ExpantaNum.ZERO)) return this.pow(other.neg()).rec();
     if (this.lt(ExpantaNum.ZERO)&&other.isint()){
@@ -540,7 +540,7 @@
       return this.abs().pow(other).neg();
     }
     if (this.lt(ExpantaNum.ZERO)) return ExpantaNum.NaN.clone();
-    if (this.eq(ExpantaNum.ONE)) return ExpantaNum.ONE.clone()
+    if (this.eq(ExpantaNum.ONE)) return ExpantaNum.ONE.clone();
     if (this.eq(ExpantaNum.ZERO)) return ExpantaNum.ZERO.clone();
     if (this.max(other).gt(ExpantaNum.TETRATED_MAX_SAFE_INTEGER)) return this.max(other);
     if (this.eq(10)){
@@ -586,7 +586,7 @@
     if (other.lt(ExpantaNum.ONE)) return this.pow(other.rec());
     if (this.lt(ExpantaNum.ZERO)&&other.isint()&&other.mod(2).eq(ExpantaNum.ONE)) return this.neg().root(other).neg();
     if (this.lt(ExpantaNum.ZERO)) return ExpantaNum.NaN.clone();
-    if (this.eq(ExpantaNum.ONE)) return ExpantaNum.ONE.clone()
+    if (this.eq(ExpantaNum.ONE)) return ExpantaNum.ONE.clone();
     if (this.eq(ExpantaNum.ZERO)) return ExpantaNum.ZERO.clone();
     if (this.max(other).gt(ExpantaNum.TETRATED_MAX_SAFE_INTEGER)) return this.gt(other)?this.clone():ExpantaNum.ZERO.clone();
     return ExpantaNum.pow(10,this.log10().div(other));
@@ -694,24 +694,25 @@
     var t=this.clone();
     other=new ExpantaNum(other);
     if (ExpantaNum.debug>=ExpantaNum.NORMAL) console.log(t+"^^"+other);
+    var negln;
     if (other.isInfinite()&&other.sign>0){
       if (t.gte(Math.exp(1/Math.E))) return ExpantaNum.POSITIVE_INFINITY.clone();
       //Formula for infinite height power tower.
-      var negln = t.ln().neg();
+      negln = t.ln().neg();
       return negln.lambertw().div(negln);
     }
     if (other.lte(-2)) return ExpantaNum.NaN.clone();
     if (t.eq(ExpantaNum.ZERO)){
       if (other.eq(ExpantaNum.ZERO)) return ExpantaNum.NaN.clone();
       if (other.mod(2).eq(ExpantaNum.ZERO)) return ExpantaNum.ZERO.clone();
-      return ExpantaNum.ONE.clone()
+      return ExpantaNum.ONE.clone();
     }
     if (t.eq(ExpantaNum.ONE)){
       if (other.eq(ExpantaNum.ONE.neg())) return ExpantaNum.NaN.clone();
-      return ExpantaNum.ONE.clone()
+      return ExpantaNum.ONE.clone();
     }
     if (other.eq(ExpantaNum.ONE.neg())) return ExpantaNum.ZERO.clone();
-    if (other.eq(ExpantaNum.ZERO)) return ExpantaNum.ONE.clone()
+    if (other.eq(ExpantaNum.ZERO)) return ExpantaNum.ONE.clone();
     if (other.eq(ExpantaNum.ONE)) return t;
     if (other.eq(2)) return t.pow(t);
     if (t.eq(2)){
@@ -722,7 +723,7 @@
     if (m.gt("10^^^"+MAX_SAFE_INTEGER)) return m;
     if (other.gt(ExpantaNum.MAX_SAFE_INTEGER)){
       if (this.lt(Math.exp(1/Math.E))){
-        var negln = t.ln().neg();
+        negln = t.ln().neg();
         return negln.lambertw().div(negln);
       }
       var j=t.slog(10).add(other);
@@ -792,7 +793,7 @@
     if (base.isInfinite()) return ExpantaNum.ZERO.clone();
     if (x.lt(ExpantaNum.ZERO)) return ExpantaNum.ONE.neg();
     if (x.eq(ExpantaNum.ONE)) return ExpantaNum.ZERO.clone();
-    if (x.eq(base)) return ExpantaNum.ONE.clone()
+    if (x.eq(base)) return ExpantaNum.ONE.clone();
     if (base.lt(Math.exp(1/Math.E))){
       var a=ExpantaNum.tetr(base,Infinity);
       if (x.eq(a)) return ExpantaNum.POSITIVE_INFINITY.clone();
@@ -872,7 +873,7 @@
           r.operator(arrows,r.operator(arrows)-1);
           r.standardize();
         }else if (t.gt("10{"+arrows.sub(ExpantaNum.ONE)+"}"+MAX_SAFE_INTEGER)){
-          r=new ExpantaNum(r.operator(arrows));
+          r=new ExpantaNum(r.operator(arrows-1));
         }else{
           r=ExpantaNum.ZERO;
         }
@@ -1357,13 +1358,13 @@
     else if (typeof array[0]=="number"){
       x.array=[];
       for (i=0;i<array.length;i++){
-        if (!(typeof array[i]=="number")) throw Error(invalidArgument+"Expected Array of Number");
+        if (typeof array[i]!="number") throw Error(invalidArgument+"Expected Array of Number");
         x.array.push([i,array[i]]);
       }
     }else if (array[0] instanceof Array){
       x.array=[];
       for (i=0;i<array.length;i++){
-        if (!(array[i] instanceof Array)||!(typeof array[i][0]=="number")||!(typeof array[i][1]=="number")) throw Error(invalidArgument+"Expected Array of pair of Number");
+        if (!(array[i] instanceof Array)||typeof array[i][0]!="number"||typeof array[i][1]!="number") throw Error(invalidArgument+"Expected Array of pair of Number");
         x.array.push([array[i][0],array[i][1]]);
       }
     }else throw Error(invalidArgument+"Expected Array of Number or Array of pair of Number");
@@ -1381,6 +1382,7 @@
     if (input.sign!==undefined&&typeof input.sign!="number") throw Error(invalidArgument+"Expected that property 'sign' is Number");
     if (input.layer!==undefined&&typeof input.layer!="number") throw Error(invalidArgument+"Expected that property 'layer' is Number");
     var x=new ExpantaNum();
+    x.array=[];
     for (var i=0;i<input.array.length;i++) x.array.push(input.array[i].slice(0));
     x.sign=Number(input.sign)||1;
     x.layer=Number(input.layer)||0;
@@ -1388,6 +1390,7 @@
     return x;
   };
   Q.fromJSON=function (input){
+    if (typeof input=="object") return ExpantaNum.fromObject(parsedObject);
     if (typeof input!="string") throw Error(invalidArgument+"Expected String");
     var parsedObject,x;
     try{
