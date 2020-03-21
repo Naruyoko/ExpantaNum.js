@@ -1,3 +1,6 @@
+# α 1.1.2 - 2020/03/21
+* Fixed "Fixed `pent` and higher hyperoperators returning `NaN` if the base is between 10{c-1}MAX_SAFE_INTEGER and 10{c}MAX_SAFE_INTEGER, and the second operand is greater than MAX_SAFE_INTEGER" not actually.
+
 # α 1.1.1 - 2020/03/16
 * Fixed `fromObject` and `fromJSON` always returning `NaN`.
 * Fixed `pent` and higher hyperoperators returning `NaN` if the base is between 10{c-1}MAX_SAFE_INTEGER and 10{c}MAX_SAFE_INTEGER, and the second operand is greater than MAX_SAFE_INTEGER.

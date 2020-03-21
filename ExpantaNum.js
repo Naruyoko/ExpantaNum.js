@@ -873,7 +873,7 @@
           r.operator(arrows,r.operator(arrows)-1);
           r.standardize();
         }else if (t.gt("10{"+arrows.sub(ExpantaNum.ONE)+"}"+MAX_SAFE_INTEGER)){
-          r=new ExpantaNum(r.operator(arrows-1));
+          r=new ExpantaNum(t.operator(arrows-1));
         }else{
           r=ExpantaNum.ZERO;
         }
