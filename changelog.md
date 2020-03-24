@@ -1,3 +1,7 @@
+# α 1.2.1 - 2020/03/23
+* Fixed `toPrecision` wrongfully using `toExponential` for `0`.
+* Fixed bad copy and paste, which resulted in `toJSON` completely useless.
+
 # α 1.2 - 2020/03/23
 * Added an option to use `toString` method instead of returning JSON object for `toJSON`.
 * Added `valueOf`, `toStringWithDecimalPlaces`, `toExponential`, `toFixed`, and `toPrecision`.

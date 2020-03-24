@@ -1206,6 +1206,7 @@
     return this.toStringWithDecimalPlaces(places,applyToOpNums);
   };
   P.toPrecision=function (places,applyToOpNums){
+    if (this.array[0][1]===0) return (this.sign*this.array[0]).toFixed(places-1,applyToOpNums);
     if (this.array.length==1&&this.array[0][1]<1e-6) return this.toExponential(places-1,applyToOpNums);
     if (this.array.length==1&&places>Math.log10(this.array[0][1])) return this.toFixed(places-Math.floor(Math.log10(this.array[0][1]))-1,applyToOpNums);
     return this.toExponential(places-1,applyToOpNums);
@@ -1215,7 +1216,7 @@
   };
   //Note: toArray() would be impossible without changing the layout of the array or lose the information about the sign
   P.toJSON=function (){
-    if (OmegaNum.serializeMode==OmegaNum.JSON){
+    if (ExpantaNum.serializeMode==ExpantaNum.JSON){
       var a=[];
       for (var i=0;i<this.array.length;++i) a.push([this.array[i][0],this.array[i][1]]);
       return {
@@ -1223,7 +1224,7 @@
         layer:this.layer,
         sign:this.sign
       };
-    }else if (OmegaNum.serializeMode==OmegaNum.STRING){
+    }else if (ExpantaNum.serializeMode==ExpantaNum.STRING){
       return this.toString();
     }
   };
