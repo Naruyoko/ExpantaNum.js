@@ -7,25 +7,6 @@
   // --  EDITABLE DEFAULTS  -- //
     var ExpantaNum = {
 
-      // The rounding mode used by default by `toInteger`, `toDecimalPlaces`, `toExponential`,
-      // `toFixed`, `toPrecision` and `toSignificantDigits`.
-      //
-      // ROUND_UP         0 Away from zero.
-      // ROUND_DOWN       1 Towards zero.
-      // ROUND_CEIL       2 Towards +Infinity.
-      // ROUND_FLOOR      3 Towards -Infinity.
-      // ROUND_HALF_UP    4 Towards nearest neighbor. If equidistant, up.
-      // ROUND_HALF_DOWN  5 Towards nearest neighbor. If equidistant, down.
-      // ROUND_HALF_EVEN  6 Towards nearest neighbor. If equidistant, towards even neighbor.
-      // ROUND_HALF_CEIL  7 Towards nearest neighbor. If equidistant, towards +Infinity.
-      // ROUND_HALF_FLOOR 8 Towards nearest neighbor. If equidistant, towards -Infinity.
-      //
-      // E.g.
-      // `ExpantaNum.rounding = 4;`
-      // `ExpantaNum.rounding = ExpantaNum.ROUND_HALF_UP;`
-      // Unused
-      rounding: 4,                           // 0 to 8
-
       // The maximum number of operators stored in array.
       // If the number of operations exceed the limit, then the least significant operations will be discarded.
       // This is to prevent long loops and eating away of memory and processing time.
@@ -33,6 +14,12 @@
       // It is not recommended to make this number too big.
       // `ExpantaNum.maxOps = 1000;`
       maxOps: 1e3,
+
+      // Specify what format is used when serializing for JSON.stringify
+      // 
+      // JSON   0 JSON object
+      // STRING 1 String
+      serializeMode: 0,
       
       // Level of debug information printed in console
       // 
@@ -113,11 +100,16 @@
    *  sumGeometricSeries
    *  times                     mul
    *  tetrate                   tetr
+   *  toExponential
+   *  toFixed
    *  toHyperE
    *  toJSON
    *  toNumber
    *  toPower                   pow
+   *  toPrecision
    *  toString
+   *  toStringWithDecimalPlaces
+   *  valueOf
    */
   R.ZERO=0;
   R.ONE=1;
@@ -1134,7 +1126,6 @@
     if (this.sign==-1) return "-"+this.abs();
     if (isNaN(this.array[0][1])) return "NaN";
     if (!isFinite(this.array[0][1])) return "Infinity";
-    var b=false;
     var s="";
     if (!this.layer) s+="";
     else if (this.layer<3) s+="J".repeat(this.layer);
@@ -1155,15 +1146,86 @@
     else s+="(10^)^"+op1+" "+op0;
     return s;
   };
+  //from break_eternity.js
+  var decimalPlaces=function decimalPlaces(value,places){
+    var len=places+1;
+    var numDigits=Math.ceil(Math.log10(Math.abs(value)));
+    var rounded=Math.round(value*Math.pow(10,len-numDigits))*Math.pow(10,numDigits-len);
+    return parseFloat(rounded.toFixed(Math.max(len-numDigits,0)));
+  };
+  P.toStringWithDecimalPlaces=function (places,applyToOpNums){
+    if (this.sign==-1) return "-"+this.abs();
+    if (isNaN(this.array[0][1])) return "NaN";
+    if (!isFinite(this.array[0][1])) return "Infinity";
+    var b=0;
+    var s="";
+    var m=Math.pow(10,places);
+    if (!this.layer) s+="";
+    else if (this.layer<3) s+="J".repeat(this.layer);
+    else s+="J^"+this.layer+" ";
+    if (this.array.length>=3||this.array.length==2&&this.array[1][0]>=2){
+      for (var i=this.array.length-1;!b&&i>=2;--i){
+        var e=this.array[i];
+        var w=e[0];
+        var x=e[1];
+        debugger
+        if (applyToOpNums&&x>=m){
+          ++w;
+          b=x;
+          x=1;
+        }else if (applyToOpNums&&this.array[i-1][0]==w-1&&this.array[i-1][1]>=m){
+          ++x;
+          b=this.array[i-1][1];
+        }
+        var q=w>=5?"{"+w+"}":"^".repeat(w);
+        if (x>1) s+="(10"+q+")^"+x+" ";
+        else if (x==1) s+="10"+q;
+      }
+    }
+    var k=this.operator(0);
+    var l=this.operator(1);
+    if (k>m){
+      k=Math.log10(k);
+      ++l;
+    }
+    if (b) s+=decimalPlaces(b,places);
+    else if (!l) s+=String(decimalPlaces(k,places));
+    else if (l<3) s+="e".repeat(l-1)+decimalPlaces(Math.pow(10,k-Math.floor(k)),places)+"e"+decimalPlaces(Math.floor(k),places);
+    else if (l<8) s+="e".repeat(l)+decimalPlaces(k,places);
+    else if (applyToOpNums) s+="(10^)^"+decimalPlaces(l,places)+" "+decimalPlaces(k,places);
+    else s+="(10^)^"+l+" "+decimalPlaces(k,places);
+    return s;
+  };
+  //these are from break_eternity.js as well
+  P.toExponential=function (places,applyToOpNums){
+    if (this.array.length==1) return (this.sign*this.array[0][1]).toExponential(places);
+    return this.toStringWithDecimalPlaces(places,applyToOpNums);
+  };
+  P.toFixed=function (places,applyToOpNums){
+    if (this.array.length==1) return (this.sign*this.array[0][1]).toFixed(places);
+    return this.toStringWithDecimalPlaces(places,applyToOpNums);
+  };
+  P.toPrecision=function (places,applyToOpNums){
+    if (this.array.length==1&&this.array[0][1]<1e-6) return this.toExponential(places-1,applyToOpNums);
+    if (this.array.length==1&&places>Math.log10(this.array[0][1])) return this.toFixed(places-Math.floor(Math.log10(this.array[0][1]))-1,applyToOpNums);
+    return this.toExponential(places-1,applyToOpNums);
+  };
+  P.valueOf=function (){
+    return this.toString();
+  };
   //Note: toArray() would be impossible without changing the layout of the array or lose the information about the sign
   P.toJSON=function (){
-    var a=[];
-    for (var i=0;i<this.array.length;++i) a.push([this.array[i][0],this.array[i][1]]);
-    return {
-      array:a,
-      layer:this.layer,
-      sign:this.sign
-    };
+    if (OmegaNum.serializeMode==OmegaNum.JSON){
+      var a=[];
+      for (var i=0;i<this.array.length;++i) a.push([this.array[i][0],this.array[i][1]]);
+      return {
+        array:a,
+        layer:this.layer,
+        sign:this.sign
+      };
+    }else if (OmegaNum.serializeMode==OmegaNum.STRING){
+      return this.toString();
+    }
   };
   P.toHyperE=function (){
     if (this.layer) throw Error(expantaNumError+"Sorry, but this prototype doesn't support correct Hyper-E notation for numbers larger than 10{MSI}10");
@@ -1547,15 +1609,8 @@
     }
     ExpantaNum.prototype = P;
 
-    ExpantaNum.ROUND_UP = 0;
-    ExpantaNum.ROUND_DOWN = 1;
-    ExpantaNum.ROUND_CEIL = 2;
-    ExpantaNum.ROUND_FLOOR = 3;
-    ExpantaNum.ROUND_HALF_UP = 4;
-    ExpantaNum.ROUND_HALF_DOWN = 5;
-    ExpantaNum.ROUND_HALF_EVEN = 6;
-    ExpantaNum.ROUND_HALF_CEIL = 7;
-    ExpantaNum.ROUND_HALF_FLOOR = 8;
+    ExpantaNum.JSON = 0;
+    ExpantaNum.STRING = 1;
     
     ExpantaNum.NONE = 0;
     ExpantaNum.NORMAL = 1;
@@ -1573,7 +1628,7 @@
     
     if (obj === void 0) obj = {};
     if (obj) {
-      ps = ['rounding', 'maxOps', 'debug'];
+      ps = ['maxOps', 'serializeMode', 'debug'];
       for (i = 0; i < ps.length;) if (!obj.hasOwnProperty(p = ps[i++])) obj[p] = this[p];
     }
 
@@ -1619,8 +1674,8 @@
     }
     var i,p,v,
       ps = [
-        'rounding',0,8,
         'maxOps',1,Number.MAX_SAFE_INTEGER,
+        'serializeMode',0,1,
         'debug',0,2
       ];
     for (i = 0; i < ps.length; i += 3) {
