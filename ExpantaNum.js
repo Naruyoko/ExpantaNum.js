@@ -591,7 +591,7 @@
     if (ExpantaNum.debug>=ExpantaNum.NORMAL) console.log("log"+this);
     if (x.lt(ExpantaNum.ZERO)) return ExpantaNum.NaN.clone();
     if (x.eq(ExpantaNum.ZERO)) return ExpantaNum.NEGATIVE_INFINITY.clone();
-    if (x.lt(ExpantaNum.MAX_SAFE_INTEGER)) return new ExpantaNum(Math.log10(x.toNumber()));
+    if (x.lte(ExpantaNum.MAX_SAFE_INTEGER)) return new ExpantaNum(Math.log10(x.toNumber()));
     if (!x.isFinite()) return x;
     if (x.gt(ExpantaNum.TETRATED_MAX_SAFE_INTEGER)) return x;
     x.operator(1,x.operator(1)-1);

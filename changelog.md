@@ -1,3 +1,6 @@
+# α 1.2.3 - 2020/03/25
+* Fixed `ExpantaNum.MAX_SAFE_INTEGER.log10()` being irregular form.
+
 # α 1.2.2 - 2020/03/23
 * Fixed `toPrecision` returning `"NaN"` for `0`.
 * Removed debugging residue.
