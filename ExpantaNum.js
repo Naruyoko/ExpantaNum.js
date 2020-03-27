@@ -79,7 +79,11 @@
    *  isNaN
    *  isNegative                isneg
    *  isPositive                ispos
+   *  iteratedexp
+   *  iteratedlog
    *  lambertw
+   *  layeradd
+   *  layeradd10
    *  lessThan                  lt
    *  lessThanOrEqualTo         lte
    *  logarithm                 logBase
@@ -682,9 +686,12 @@
   };
   //end break_eternity.js excerpt
   //Uses linear approximations for real height
-  P.tetrate=P.tetr=function (other){
+  P.tetrate=P.tetr=function (other,payload){
+    if (payload===undefined) payload=ExpantaNum.ONE;
     var t=this.clone();
     other=new ExpantaNum(other);
+    payload=new ExpantaNum(payload);
+    if (payload.neq(ExpantaNum.ONE)) other=other.add(payload.slog(t));
     if (ExpantaNum.debug>=ExpantaNum.NORMAL) console.log(t+"^^"+other);
     var negln;
     if (other.isInfinite()&&other.sign>0){
@@ -751,9 +758,46 @@
     r.standardize();
     return r;
   };
-  Q.tetrate=Q.tetr=function (x,y){
-    return new ExpantaNum(x).tetr(y);
+  Q.tetrate=Q.tetr=function (x,y,payload){
+    return new ExpantaNum(x).tetr(y,payload);
   };
+  //Implementation of functions from break_eternity.js
+  P.iteratedexp=function (other,payload){
+    return this.tetr(other,payload);
+  };
+  Q.iteratedexp=function (x,y,payload){
+    return new ExpantaNum(x).iteratedexp(other,payload);
+  }
+  //This implementation is highly inaccurate and slow, and probably be given custom code
+  P.iteratedlog=function (base,other){
+    if (base===undefined) base=10;
+    if (other===undefined) other=ExpantaNum.ONE.clone();
+    var t=this.clone();
+    base=new ExpantaNum(base);
+    other=new ExpantaNum(other);
+    return base.tetr(t.slog(base).sub(other));
+  }
+  Q.iteratedlog=function (x,y,z){
+    return new ExpantaNum(x).iteratedlog(y,z);
+  }
+  P.layeradd=function (other,base){
+    if (base===undefined) base=10;
+    if (other===undefined) other=ExpantaNum.ONE.clone();
+    var t=this.clone();
+    base=new ExpantaNum(base);
+    other=new ExpantaNum(other);
+    return base.tetr(t.slog(base).add(other));
+  }
+  Q.layeradd=function (x,y,z){
+    return new ExpantaNum(x).layeradd(y,z);
+  }
+  P.layeradd10=function (other){
+    return this.layeradd(other);
+  }
+  Q.layeradd10=function (x,y){
+    return new ExpantaNum(x).layeradd10(y);
+  }
+  //End implementation from break_eternity.js
   //All of these are from Patashu's break_eternity.js
   //The super square-root function - what number, tetrated to height 2, equals this?
   //Other sroots are possible to calculate probably through guess and check methods, this one is easy though.
