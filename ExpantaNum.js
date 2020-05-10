@@ -151,7 +151,7 @@
     return new ExpantaNum(x).neg();
   };
   P.compareTo=P.cmp=function (other){
-    other=new ExpantaNum(other);
+    if (!(other instanceof ExpantaNum)) other=new ExpantaNum(other);
     if (isNaN(this.array[0][1])||isNaN(other.array[0][1])) return NaN;
     if (this.array[0][1]==Infinity&&other.array[0][1]!=Infinity) return this.sign;
     if (this.array[0][1]!=Infinity&&other.array[0][1]==Infinity) return -other.sign;
@@ -381,7 +381,7 @@
     if (x.isInfinite()) return x;
     if (other.isInfinite()) return other;
     if (x.max(other).gt(ExpantaNum.EE_MAX_SAFE_INTEGER)) return x.max(other);
-    var n=x*other;
+    var n=x.toNumber()*other.toNumber();
     if (n<=MAX_SAFE_INTEGER) return new ExpantaNum(n);
     return ExpantaNum.pow(10,x.log10().add(other.log10()));
   };
@@ -401,7 +401,7 @@
     if (x.isInfinite()) return x;
     if (other.isInfinite()) return ExpantaNum.ZERO.clone();
     if (x.max(other).gt(ExpantaNum.EE_MAX_SAFE_INTEGER)) return x.gt(other)?x.clone():ExpantaNum.ZERO.clone();
-    var n=x/other;
+    var n=x.toNumber()/other.toNumber();
     if (n<=MAX_SAFE_INTEGER) return new ExpantaNum(n);
     var pw=ExpantaNum.pow(10,x.log10().sub(other.log10()));
     var fp=pw.floor();
@@ -545,11 +545,11 @@
         other.standardize();
         return other;
       }else{
-        return new ExpantaNum(Math.pow(10,other));
+        return new ExpantaNum(Math.pow(10,other.toNumber()));
       }
     }
     if (other.lt(ExpantaNum.ONE)) return this.root(other.rec());
-    var n=Math.pow(this,other);
+    var n=Math.pow(this.toNumber(),other.toNumber());
     if (n<=MAX_SAFE_INTEGER) return new ExpantaNum(n);
     return ExpantaNum.pow(10,this.log10().mul(other));
   };
@@ -767,7 +767,7 @@
   };
   Q.iteratedexp=function (x,y,payload){
     return new ExpantaNum(x).iteratedexp(other,payload);
-  }
+  };
   //This implementation is highly inaccurate and slow, and probably be given custom code
   P.iteratedlog=function (base,other){
     if (base===undefined) base=10;
@@ -776,10 +776,10 @@
     base=new ExpantaNum(base);
     other=new ExpantaNum(other);
     return base.tetr(t.slog(base).sub(other));
-  }
+  };
   Q.iteratedlog=function (x,y,z){
     return new ExpantaNum(x).iteratedlog(y,z);
-  }
+  };
   P.layeradd=function (other,base){
     if (base===undefined) base=10;
     if (other===undefined) other=ExpantaNum.ONE.clone();
@@ -787,16 +787,16 @@
     base=new ExpantaNum(base);
     other=new ExpantaNum(other);
     return base.tetr(t.slog(base).add(other));
-  }
+  };
   Q.layeradd=function (x,y,z){
     return new ExpantaNum(x).layeradd(y,z);
-  }
+  };
   P.layeradd10=function (other){
     return this.layeradd(other);
-  }
+  };
   Q.layeradd10=function (x,y){
     return new ExpantaNum(x).layeradd10(y);
-  }
+  };
   //End implementation from break_eternity.js
   //All of these are from Patashu's break_eternity.js
   //The super square-root function - what number, tetrated to height 2, equals this?
@@ -1081,7 +1081,7 @@
       if (ExpantaNum.debug>=ExpantaNum.ALL) console.log(x.toString());
       b=false;
       x.array.sort(function (a,b){return a[0]>b[0]?1:a[0]<b[0]?-1:0;});
-      while (x.array.length>ExpantaNum.maxOps) x.array.shift();
+      if (x.array.length>ExpantaNum.maxOps) x.array.splice(0,x.array.length-ExpantaNum.maxOps);
       if (!x.array.length) x.array=[[0,0]];
       if (x.array[x.array.length-1][0]>MAX_SAFE_INTEGER){
         x.layer++;
@@ -1489,7 +1489,7 @@
     if (input.layer!==undefined&&typeof input.layer!="number") throw Error(invalidArgument+"Expected that property 'layer' is Number");
     var x=new ExpantaNum();
     x.array=[];
-    for (var i=0;i<input.array.length;i++) x.array.push(input.array[i].slice(0));
+    for (var i=0;i<input.array.length;i++) x.array.push(temp.push([input.array[i][0],input.array[i][1]]));
     x.sign=Number(input.sign)||1;
     x.layer=Number(input.layer)||0;
     x.standardize();
@@ -1590,7 +1590,13 @@
     else this.setOperator(i,value);
   };
   P.clone=function (){
-    return new ExpantaNum(this);
+    var temp=new ExpantaNum();
+    var array=[];
+    for (var i=0;i<this.array.length;++i) array.push([this.array[i][0],this.array[i][1]]);
+    temp.array=array;
+    temp.sign=this.sign;
+    temp.layer=this.layer;
+    return temp;
   };
   // ExpantaNum methods
 
