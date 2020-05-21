@@ -1,3 +1,6 @@
+# α 1.3.2 - 2020/05/20
+* Fixed freeze on processing numbers such as 10^^^^^^^10.
+
 # α 1.3.1 - 2020/05/10
 * Very small optimizations.
 

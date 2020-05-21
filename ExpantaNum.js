@@ -1562,7 +1562,7 @@
         min=mid;
         break;
       }
-      if (a[mid][0]<i) mid=mid;
+      if (a[mid][0]<i) min=mid;
       if (a[mid][0]>i) max=mid;
     }
     return a[min][0]==i?min:min+0.5;
