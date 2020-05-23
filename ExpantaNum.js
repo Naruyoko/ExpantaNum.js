@@ -694,6 +694,7 @@
     if (payload.neq(ExpantaNum.ONE)) other=other.add(payload.slog(t));
     if (ExpantaNum.debug>=ExpantaNum.NORMAL) console.log(t+"^^"+other);
     var negln;
+    if (t.isNaN()||other.isNaN()||payload.isNaN()) return ExpantaNum.NaN.clone()
     if (other.isInfinite()&&other.sign>0){
       if (t.gte(Math.exp(1/Math.E))) return ExpantaNum.POSITIVE_INFINITY.clone();
       //Formula for infinite height power tower.
@@ -893,7 +894,13 @@
       other=new ExpantaNum(other);
       var r;
       if (ExpantaNum.debug>=ExpantaNum.NORMAL) console.log(t+"{"+arrows+"}"+other);
+    if (t.isNaN()||other.isNaN()) return ExpantaNum.NaN.clone()
       if (other.lt(ExpantaNum.ZERO)) return ExpantaNum.NaN.clone();
+      if (t.eq(ExpantaNum.ZERO)){
+        if (other.eq(ExpantaNum.ONE)) return ExpantaNum.ZERO.clone();
+        return ExpantaNum.NaN.clone();
+      }
+      if (t.eq(ExpantaNum.ONE)) return ExpantaNum.ONE.clone();
       if (other.eq(ExpantaNum.ZERO)) return ExpantaNum.ONE.clone();
       if (other.eq(ExpantaNum.ONE)) return t.clone();
       if (arrows.gt(ExpantaNum.MAX_SAFE_INTEGER)){

@@ -1,3 +1,7 @@
+# α 1.3.3 - 2020/05/23
+* Fixed `tetr` and up returning non-`NaN` for special cases involving `NaN`.
+* Fixed `pent` and up returning `Infinity` for `0{n}Infinity`.
+
 # α 1.3.2 - 2020/05/20
 * Fixed freeze on processing numbers such as 10^^^^^^^10.
 
