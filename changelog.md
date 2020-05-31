@@ -1,3 +1,7 @@
+# α 1.3.4 - 2020/05/30
+* Fixed `a{n}b` for `10{n}MAX_SAFE_INTEGER<a<=10{n+1}MAX_SAFE_INTEGER` and `b<MAX_SAFE_INTEGER`.
+* Fixed `toJSON`.
+
 # α 1.3.3 - 2020/05/23
 * Fixed `tetr` and up returning non-`NaN` for special cases involving `NaN`.
 * Fixed `pent` and up returning `Infinity` for `0{n}Infinity`.

@@ -721,7 +721,7 @@
     }
     var m=t.max(other);
     if (m.gt("10^^^"+MAX_SAFE_INTEGER)) return m;
-    if (other.gt(ExpantaNum.MAX_SAFE_INTEGER)){
+    if (m.gt(ExpantaNum.TETRATED_MAX_SAFE_INTEGER)||other.gt(ExpantaNum.MAX_SAFE_INTEGER)){
       if (this.lt(Math.exp(1/Math.E))){
         negln = t.ln().neg();
         return negln.lambertw().div(negln);
@@ -910,7 +910,7 @@
       }
       if (other.eq(2)) return t.arrow(arrows-1)(t,depth+1);
       if (t.max(other).gt("10{"+arrows.add(ExpantaNum.ONE)+"}"+MAX_SAFE_INTEGER)) return t.max(other);
-      if (other.gt(ExpantaNum.MAX_SAFE_INTEGER)){
+      if (t.gt("10{"+arrows+"}"+MAX_SAFE_INTEGER)||other.gt(ExpantaNum.MAX_SAFE_INTEGER)){
         if (t.gt("10{"+arrows+"}"+MAX_SAFE_INTEGER)){
           r=t.clone();
           r.operator(arrows,r.operator(arrows)-1);
@@ -1494,13 +1494,14 @@
     if (!(input.array instanceof Array)) throw Error(invalidArgument+"Expected that property 'array' exists");
     if (input.sign!==undefined&&typeof input.sign!="number") throw Error(invalidArgument+"Expected that property 'sign' is Number");
     if (input.layer!==undefined&&typeof input.layer!="number") throw Error(invalidArgument+"Expected that property 'layer' is Number");
-    var x=new ExpantaNum();
+    return ExpantaNum.fromArray(input.array,input.sign,input.layer);
+    /*var x=new ExpantaNum();
     x.array=[];
-    for (var i=0;i<input.array.length;i++) x.array.push(temp.push([input.array[i][0],input.array[i][1]]));
+    for (var i=0;i<input.array.length;i++) x.array.push([input.array[i][0],input.array[i][1]]);
     x.sign=Number(input.sign)||1;
     x.layer=Number(input.layer)||0;
     x.standardize();
-    return x;
+    return x;*/
   };
   Q.fromJSON=function (input){
     if (typeof input=="object") return ExpantaNum.fromObject(parsedObject);
@@ -1565,7 +1566,7 @@
       if (a[min][0]==i) return min;
       if (a[max][0]==i) return max;
       var mid=Math.floor((min+max)/2);
-      if (a[mid][0]==i){
+      if (min==mid||a[mid][0]==i){
         min=mid;
         break;
       }
