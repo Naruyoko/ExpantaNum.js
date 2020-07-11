@@ -1,3 +1,7 @@
+# α 1.3.5 - 2020/07/11
+* Added `0` times and `1` time logs case for `iteratedlog`.
+* Fixed freezing on `"10{>MSI}10"`.
+
 # α 1.3.4 - 2020/05/30
 * Fixed `a{n}b` for `10{n}MAX_SAFE_INTEGER<a<=10{n+1}MAX_SAFE_INTEGER` and `b<MAX_SAFE_INTEGER`.
 * Fixed `toJSON`.
