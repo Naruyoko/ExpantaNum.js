@@ -774,6 +774,8 @@
     if (base===undefined) base=10;
     if (other===undefined) other=ExpantaNum.ONE.clone();
     var t=this.clone();
+    if (other.eq(0)) return t;
+		if (other.eq(1)) return t.logBase(base);
     base=new ExpantaNum(base);
     other=new ExpantaNum(other);
     return base.tetr(t.slog(base).sub(other));
