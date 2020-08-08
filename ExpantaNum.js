@@ -1067,6 +1067,7 @@
       x.layer=0;
       return x;
     }
+    if (Number.isInteger(x.layer)) x.layer=Math.floor(x.layer);
     for (var i=0;i<x.array.length;++i){
       var e=x.array[i];
       if (e[0]===null||e[0]===undefined){
@@ -1085,6 +1086,8 @@
         x.array=[[0,Infinity]];
         return x;
       }
+      if (!Number.isInteger(e[0])) e[0]=Math.floor(e[0]);
+      if (e[0]!==0&&!Number.isInteger(e[1])) e[1]=Math.floor(e[1]);
     }
     do{
       if (ExpantaNum.debug>=ExpantaNum.ALL) console.log(x.toString());
@@ -1099,7 +1102,7 @@
       }else if (x.layer&&x.array.length==1&&x.array[0][0]===0){
         x.layer--;
         if (x.array[0][1]===0) x.array=[[0,10]];
-        else x.array=[[0,10],[x.array[0][1],1]];
+        else x.array=[[0,10],[Math.floor(x.array[0][1]),1]];
         b=true;
       }
       if (x.array.length<ExpantaNum.maxOps&&x.array[0][0]!==0) x.array.unshift([0,10]);

@@ -1,3 +1,7 @@
+# α 1.3.6 - 2020/08/07
+* Fixed hang on `J<fraction>`.
+* Fixed decimal array element.
+
 # α 1.3.5 - 2020/07/11
 * Added `0` times and `1` time logs case for `iteratedlog`.
 * Fixed freezing on `"10{>MSI}10"`.
