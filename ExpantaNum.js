@@ -1102,7 +1102,7 @@
       }else if (x.layer&&x.array.length==1&&x.array[0][0]===0){
         x.layer--;
         if (x.array[0][1]===0) x.array=[[0,10]];
-        else x.array=[[0,10],[Math.floor(x.array[0][1]),1]];
+        else x.array=[[0,10],[Math.round(x.array[0][1]),1]];
         b=true;
       }
       if (x.array.length<ExpantaNum.maxOps&&x.array[0][0]!==0) x.array.unshift([0,10]);

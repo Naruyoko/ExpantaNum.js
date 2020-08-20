@@ -1,3 +1,6 @@
+# α 1.3.7 - 2020/08/19
+* Changed the rounding of expanding a layer of `10{x}10` with fractional operator from floor to round.
+
 # α 1.3.6 - 2020/08/07
 * Fixed hang on `J<fraction>`.
 * Fixed decimal array element.
