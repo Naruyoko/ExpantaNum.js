@@ -32,7 +32,7 @@
 
   // -- END OF EDITABLE DEFAULTS -- //
 
-
+    
     external = true,
 
     expantaNumError = "[ExpantaNumError] ",
@@ -51,7 +51,31 @@
     R={};
 
   // ExpantaNum prototype methods
+    Q.config=function(){
+      ExpantaNum = {
 
+      // The maximum number of operators stored in array.
+      // If the number of operations exceed the limit, then the least significant operations will be discarded.
+      // This is to prevent long loops and eating away of memory and processing time.
+      // 1000 means there are at maximum of 1000 elements in array.
+      // It is not recommended to make this number too big.
+      // `ExpantaNum.maxOps = 1000;`
+      maxOps: 1e3,
+
+      // Specify what format is used when serializing for JSON.stringify
+      // 
+      // JSON   0 JSON object
+      // STRING 1 String
+      serializeMode: 0,
+      
+      // Level of debug information printed in console
+      // 
+      // NONE   0 Show no information.
+      // NORMAL 1 Show operations.
+      // ALL    2 Show everything.
+      debug: 0
+    }
+   }
   /*
    *  absoluteValue             abs
    *  affordArithmeticSeries
@@ -155,6 +179,7 @@
     if (isNaN(this.array[0][1])||isNaN(other.array[0][1])) return NaN;
     if (this.array[0][1]==Infinity&&other.array[0][1]!=Infinity) return this.sign;
     if (this.array[0][1]!=Infinity&&other.array[0][1]==Infinity) return -other.sign;
+    if (this.array[0][1]==Infinity&&other.array[0][1]==Infinity) return 2/(this.sign-other.sign);
     if (this.array.length==1&&this.array[0][1]===0&&other.array.length==1&&other.array[0][1]===0) return 0;
     if (this.sign!=other.sign) return this.sign;
     var m=this.sign;
@@ -277,6 +302,10 @@
   Q.isInfinite=function (x){
     return new ExpantaNum(x).isInfinite();
   };
+  P.setInfinite=function (){
+    this.array[0][1]=Infinity;
+    this.standardize();
+  }
   P.isInteger=P.isint=function (){
     if (this.sign==-1) return this.abs().isint();
     if (this.gt(ExpantaNum.MAX_SAFE_INTEGER)) return true;
@@ -414,7 +443,7 @@
   P.reciprocate=P.rec=function (){
     if (ExpantaNum.debug>=ExpantaNum.NORMAL) console.log(this+"^-1");
     if (this.isNaN()||this.eq(ExpantaNum.ZERO)) return ExpantaNum.NaN.clone();
-    if (this.abs().gt("2e323")) return ExpantaNum.ZERO.clone();
+    if (this.abs().gt("2e323")) return ExpantaNum.ONE.clone().div(this);
     return new ExpantaNum(1/this);
   };
   Q.reciprocate=Q.rec=function (x){
@@ -520,7 +549,8 @@
     if (e<50000) e+=-139/51840*Math.pow(e,3);
     if (e<1e7) e+=1/288*Math.pow(e,2);
     if (e<1e20) e+=1/12*e;
-    return x.div(ExpantaNum.E).pow(x).mul(x.mul(ExpantaNum.PI).mul(2).sqrt()).times(errorFixer);
+    if (x.lte('1e157'))return x.div(ExpantaNum.E).pow(x).mul(x.mul(ExpantaNum.PI).mul(2).sqrt()).times(errorFixer);
+    else return x.gamma();
   };
   Q.factorial=Q.fact=function (x){
     return new ExpantaNum(x).fact();
@@ -838,7 +868,7 @@
       if (x.eq(a)) return ExpantaNum.POSITIVE_INFINITY.clone();
       if (x.gt(a)) return ExpantaNum.NaN.clone();
     }
-    if (x.max(base).gt("10^^^"+MAX_SAFE_INTEGER)){
+    if (x.max(base).gt("10^^^"+E_MAX_SAFE_INTEGER)){
       if (x.gt(base)) return x;
       return ExpantaNum.ZERO.clone();
     }
