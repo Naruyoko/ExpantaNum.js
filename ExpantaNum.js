@@ -1160,9 +1160,9 @@
           if (x.array[0][0]===0){
             x.array[0][1]=x.array[i][1]+1;
           }else{
-            x.splice(0,0,[0,x.array[i][1]+1]);
+            x.array.splice(0,0,[0,x.array[i][1]+1]);
           }
-          x.splice(1,i);
+          x.array.splice(1,i);
           b=true;
         }
       }
