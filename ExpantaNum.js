@@ -727,7 +727,7 @@
         return negln.lambertw().div(negln);
       }
       var j=t.slog(10).add(other);
-      j.operator(2,(other.operator(2)||0)+1);
+      j.operator(2,(j.operator(2)||0)+1);
       j.standardize();
       return j;
     }
@@ -923,7 +923,7 @@
           r=ExpantaNum.ZERO;
         }
         var j=r.add(other);
-        j.operator(arrows,(other.operator(arrows)||0)+1);
+        j.operator(arrows,(j.operator(arrows)||0)+1);
         j.standardize();
         return j;
       }
