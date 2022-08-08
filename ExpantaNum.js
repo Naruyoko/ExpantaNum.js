@@ -910,37 +910,39 @@
         r.layer++;
         return r;
       }
-      if (other.eq(2)) return t.arrow(arrows-1)(t,depth+1);
-      if (t.max(other).gt("10{"+arrows.add(ExpantaNum.ONE)+"}"+MAX_SAFE_INTEGER)) return t.max(other);
-      if (t.gt("10{"+arrows+"}"+MAX_SAFE_INTEGER)||other.gt(ExpantaNum.MAX_SAFE_INTEGER)){
-        if (t.gt("10{"+arrows+"}"+MAX_SAFE_INTEGER)){
+      var arrowsNum=arrows.toNumber();
+      if (other.eq(2)) return t.arrow(arrowsNum-1)(t,depth+1);
+      if (t.max(other).gt("10{"+(arrowsNum+1)+"}"+MAX_SAFE_INTEGER)) return t.max(other);
+      if (t.gt("10{"+arrowsNum+"}"+MAX_SAFE_INTEGER)||other.gt(ExpantaNum.MAX_SAFE_INTEGER)){
+        if (t.gt("10{"+arrowsNum+"}"+MAX_SAFE_INTEGER)){
           r=t.clone();
-          r.operator(arrows,r.operator(arrows)-1);
+          r.operator(arrowsNum,r.operator(arrowsNum)-1);
           r.standardize();
-        }else if (t.gt("10{"+arrows.sub(ExpantaNum.ONE)+"}"+MAX_SAFE_INTEGER)){
-          r=new ExpantaNum(t.operator(arrows-1));
+        }else if (t.gt("10{"+(arrowsNum-1)+"}"+MAX_SAFE_INTEGER)){
+          r=new ExpantaNum(t.operator(arrowsNum-1));
         }else{
           r=ExpantaNum.ZERO;
         }
         var j=r.add(other);
-        j.operator(arrows,(j.operator(arrows)||0)+1);
+        j.operator(arrowsNum,(j.operator(arrowsNum)||0)+1);
         j.standardize();
         return j;
       }
       if (depth>=ExpantaNum.maxOps+10){
-        return new ExpantaNum([[0,10],[Number(arrows),1]]);
+        return new ExpantaNum([[0,10],[arrowsNum,1]]);
       }
       var y=other.toNumber();
       var f=Math.floor(y);
-      r=t.arrow(arrows.sub(1))(y-f,depth+1);
-      for (var i=0,m=new ExpantaNum("10{"+arrows.sub(ExpantaNum.ONE)+"}"+MAX_SAFE_INTEGER);f!==0&&r.lt(m)&&i<100;++i){
+      var arrows_m1=arrows.sub(OmegaNum.ONE);
+      r=t.arrow(arrows_m1)(y-f,depth+1);
+      for (var i=0,m=new ExpantaNum("10{"+(arrowsNum-1)+"}"+MAX_SAFE_INTEGER);f!==0&&r.lt(m)&&i<100;++i){
         if (f>0){
-          r=t.arrow(arrows.sub(ExpantaNum.ONE))(r,depth+1);
+          r=t.arrow(arrows_m1)(r,depth+1);
           --f;
         }
       }
       if (i==100) f=0;
-      r.operator(Number(arrows.sub(ExpantaNum.ONE)),(r.operator(Number(arrows.sub(ExpantaNum.ONE)))+f)||f);
+      r.operator(arrowsNum-1,(r.operator(arrowsNum-1)+f)||f);
       r.standardize();
       return r;
     };
