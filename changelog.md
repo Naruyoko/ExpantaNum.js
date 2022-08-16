@@ -1,3 +1,8 @@
+# α 1.3.9 - 2022/08/15
+* Fixed a crash when standardizing `[[0,a],[1,x],...]` with `x>MSI` ([#18](https://github.com/Naruyoko/ExpantaNum.js/issues/18)).
+* Fixed `a{n}b` when `10{n}10{n}MSI<a<=10{n+1}MSI` and `MSI<=b<10{n}10{n}a` ([#20](https://github.com/Naruyoko/ExpantaNum.js/issues/20)).
+* Compacted factorials LUT, reducing un-minified file size.
+
 # α 1.3.8 - 2021/07/29
 * Fixed `fromString` not parsing some inputs correctly. 
 
