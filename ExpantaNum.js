@@ -933,7 +933,7 @@
       }
       var y=other.toNumber();
       var f=Math.floor(y);
-      var arrows_m1=arrows.sub(OmegaNum.ONE);
+      var arrows_m1=arrows.sub(ExpantaNum.ONE);
       r=t.arrow(arrows_m1)(y-f,depth+1);
       for (var i=0,m=new ExpantaNum("10{"+(arrowsNum-1)+"}"+MAX_SAFE_INTEGER);f!==0&&r.lt(m)&&i<100;++i){
         if (f>0){
