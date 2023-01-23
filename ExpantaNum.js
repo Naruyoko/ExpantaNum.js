@@ -21,6 +21,7 @@
       // STRING 1 String
       serializeMode: 0,
       
+      // Deprecated
       // Level of debug information printed in console
       // 
       // NONE   0 Show no information.
@@ -306,10 +307,14 @@
   Q.round=function (x){
     return new ExpantaNum(x).round();
   };
+  var debugMessageSent=false;
   P.plus=P.add=function (other){
     var x=this.clone();
     other=new ExpantaNum(other);
-    if (ExpantaNum.debug>=ExpantaNum.NORMAL) console.log(this+"+"+other);
+    if (ExpantaNum.debug>=ExpantaNum.NORMAL){
+      console.log(this+"+"+other);
+      if (!debugMessageSent) console.warn(expantaNumError+"Debug output via 'debug' is being deprecated and will be removed in the future!"),debugMessageSent=true;
+    }
     if (x.sign==-1) return x.neg().add(other.neg()).neg();
     if (other.sign==-1) return x.sub(other.neg());
     if (x.eq(ExpantaNum.ZERO)) return other;
