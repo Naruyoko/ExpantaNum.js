@@ -1,5 +1,13 @@
 # ExpantaNum.js changelog
 
+## α 1.4.0 - 2023/01/22
+
+* Added support for conversion from BigInt ([OmegaNum.js#37](https://github.com/Naruyoko/OmegaNum.js/issues/37)).
+* Fixed long number converted to `Infinity` when converting from a string ([OmegaNum.js#37](https://github.com/Naruyoko/OmegaNum.js/issues/37)).
+* Fixed `toStringWithDecimalPlaces` throwing `RangeError` on small values ([#22](https://github.com/Naruyoko/ExpantaNum.js/issues/22)).
+* Renamed "standardize" to "normalize" and deprecated the old name.
+* Deprecated "debug" option.
+
 ## α 1.3.10 - 2022/12/12
 
 * Fixed a crash in `arrow` ([#21](https://github.com/Naruyoko/ExpantaNum.js/issues/21)).
