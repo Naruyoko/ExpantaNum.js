@@ -542,7 +542,7 @@
     if (this.eq(10)){
       if (other.gt(ExpantaNum.ZERO)){
         other.operator(1,(other.operator(1)+1)||1);
-        other.standardize();
+        other.normalize();
         return other;
       }else{
         return new ExpantaNum(Math.pow(10,other.toNumber()));
@@ -599,7 +599,7 @@
     if (!x.isFinite()) return x;
     if (x.gt(ExpantaNum.TETRATED_MAX_SAFE_INTEGER)) return x;
     x.operator(1,x.operator(1)-1);
-    return x.standardize();
+    return x.normalize();
   };
   Q.generalLogarithm=Q.log10=function (x){
     return new ExpantaNum(x).log10();
@@ -728,7 +728,7 @@
       }
       var j=t.slog(10).add(other);
       j.operator(2,(j.operator(2)||0)+1);
-      j.standardize();
+      j.normalize();
       return j;
     }
     var y=other.toNumber();
@@ -756,7 +756,7 @@
     }
     if (i==100||this.lt(Math.exp(1/Math.E))) f=0;
     r.operator(1,(r.operator(1)+f)||f);
-    r.standardize();
+    r.normalize();
     return r;
   };
   Q.tetrate=Q.tetr=function (x,y,payload){
@@ -845,7 +845,7 @@
     if (x.max(base).gt(ExpantaNum.TETRATED_MAX_SAFE_INTEGER)){
       if (x.gt(base)){
         x.operator(2,x.operator(2)-1);
-        x.standardize();
+        x.normalize();
         return x.sub(x.operator(1));
       }
       return ExpantaNum.ZERO.clone();
@@ -917,7 +917,7 @@
         if (t.gt("10{"+arrowsNum+"}"+MAX_SAFE_INTEGER)){
           r=t.clone();
           r.operator(arrowsNum,r.operator(arrowsNum)-1);
-          r.standardize();
+          r.normalize();
         }else if (t.gt("10{"+(arrowsNum-1)+"}"+MAX_SAFE_INTEGER)){
           r=new ExpantaNum(t.operator(arrowsNum-1));
         }else{
@@ -925,7 +925,7 @@
         }
         var j=r.add(other);
         j.operator(arrowsNum,(j.operator(arrowsNum)||0)+1);
-        j.standardize();
+        j.normalize();
         return j;
       }
       if (depth>=ExpantaNum.maxOps+10){
@@ -943,7 +943,7 @@
       }
       if (i==100) f=0;
       r.operator(arrowsNum-1,(r.operator(arrowsNum-1)+f)||f);
-      r.standardize();
+      r.normalize();
       return r;
     };
   };
@@ -982,7 +982,7 @@
     }
     if (i==100) f=0;
     r.layer+=f;
-    r.standardize();
+    r.normalize();
     return r;
   };
   Q.expansion=function (x,y){
@@ -1055,7 +1055,7 @@
     return ExpantaNum.choose(this, other);
   };
   //end break_eternity.js excerpt
-  P.standardize=function (){
+  P.normalize=function (){
     var b;
     var x=this;
     if (ExpantaNum.debug>=ExpantaNum.ALL) console.log(x.toString());
@@ -1172,6 +1172,11 @@
     if (!x.array.length) x.array=[[0,0]];
     return x;
   };
+  var standardizeMessageSent=false;
+  P.standardize=function (){
+    if (!standardizeMessageSent) console.warn(expantaNumError+"'standardize' method is being deprecated in favor of 'normalize' and will be removed in the future!"),standardizeMessageSent=true;
+    return this.normalize();
+  }
   P.toNumber=function (){
     //console.log(this.array);
     if (this.sign==-1) return -1*this.abs();
@@ -1309,7 +1314,7 @@
     var x=new ExpantaNum();
     x.array[0][1]=Math.abs(input);
     x.sign=input<0?-1:1;
-    x.standardize();
+    x.normalize();
     return x;
   };
   var log10PosBigInt=function log10PosBigInt(input){
@@ -1332,7 +1337,7 @@
     x.sign=input<BigInt(0)?-1:1;
     if (abs<=MAX_SAFE_INTEGER) x.array[0][1]=Number(abs);
     else x.array=[[0,log10PosBigInt(abs)],[1,1]];
-    x.standardize();
+    x.normalize();
     return x;
   }
   var LONG_STRING_MIN_LENGTH=17;
@@ -1483,7 +1488,7 @@
       }
     }
     if (negateIt) x.sign*=-1;
-    x.standardize();
+    x.normalize();
     return x;
   };
   Q.fromArray=function (input1,input2,input3){
@@ -1521,7 +1526,7 @@
     }else throw Error(invalidArgument+"Expected Array of Number or Array of pair of Number");
     if (sign) x.sign=Number(sign);
     else x.sign=1;
-    x.standardize();
+    x.normalize();
     return x;
   };
   Q.fromObject=function (input){
@@ -1538,7 +1543,7 @@
     for (var i=0;i<input.array.length;i++) x.array.push([input.array[i][0],input.array[i][1]]);
     x.sign=Number(input.sign)||1;
     x.layer=Number(input.layer)||0;
-    x.standardize();
+    x.normalize();
     return x;*/
   };
   Q.fromJSON=function (input){
@@ -1590,7 +1595,7 @@
       }
     }
     if (negateIt) x.sign*=-1;
-    x.standardize();
+    x.normalize();
     return x;
   };
   P.getOperatorIndex=function (i){
@@ -1629,7 +1634,7 @@
       ai=Math.ceil(ai);
       this.array.splice(ai,0,[i,value]);
     }
-    this.standardize();
+    this.normalize();
   };
   P.operator=function (i,value){
     if (value===undefined) return this.getOperator(i);
