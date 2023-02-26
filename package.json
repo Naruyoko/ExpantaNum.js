@@ -4,7 +4,7 @@
   "description": "A JavaScript library that handles arithmetic for numbers as large as {10,9e15,1,2}.",
   "main": "ExpantaNum.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/Naruyoko/ExpantaNum.js/issues"
   },
-  "homepage": "https://github.com/Naruyoko/ExpantaNum.js"
+  "homepage": "https://github.com/Naruyoko/ExpantaNum.js",
+  "devDependencies": {
+    "jest": "^29.4.3"
+  }
 }
