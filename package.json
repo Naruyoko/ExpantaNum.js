@@ -4,7 +4,7 @@
   "description": "A JavaScript library that handles arithmetic for numbers as large as {10,9e15,1,2}.",
   "main": "ExpantaNum.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
