@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/Naruyoko/ExpantaNum.js/issues"
   },
-  "homepage": "https://github.com/Naruyoko/ExpantaNum.js"
+  "homepage": "https://github.com/Naruyoko/ExpantaNum.js",
+  "devDependencies": {
+    "jest": "^29.4.3"
+  }
 }
