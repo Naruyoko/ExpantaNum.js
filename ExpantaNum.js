@@ -5,117 +5,52 @@
 
 
   // --  EDITABLE DEFAULTS  -- //
-    var ExpantaNum = {
+  var ExpantaNum = {
 
-      // The maximum number of operators stored in array.
-      // If the number of operations exceed the limit, then the least significant operations will be discarded.
-      // This is to prevent long loops and eating away of memory and processing time.
-      // 1000 means there are at maximum of 1000 elements in array.
-      // It is not recommended to make this number too big.
-      // `ExpantaNum.maxOps = 1000;`
-      maxOps: 1e3,
+    // The maximum number of operators stored in array.
+    // If the number of operations exceed the limit, then the least significant operations will be discarded.
+    // This is to prevent long loops and eating away of memory and processing time.
+    // 1000 means there are at maximum of 1000 elements in array.
+    // It is not recommended to make this number too big.
+    // `ExpantaNum.maxOps = 1000;`
+    maxOps: 1e3,
 
-      // Specify what format is used when serializing for JSON.stringify
-      //
-      // JSON   0 JSON object
-      // STRING 1 String
-      serializeMode: 0,
+    // Specify what format is used when serializing for JSON.stringify
+    //
+    // JSON   0 JSON object
+    // STRING 1 String
+    serializeMode: 0,
 
-      // Deprecated
-      // Level of debug information printed in console
-      //
-      // NONE   0 Show no information.
-      // NORMAL 1 Show operations.
-      // ALL    2 Show everything.
-      debug: 0
-    },
+    // Deprecated
+    // Level of debug information printed in console
+    //
+    // NONE   0 Show no information.
+    // NORMAL 1 Show operations.
+    // ALL    2 Show everything.
+    debug: 0
+  },
 
 
   // -- END OF EDITABLE DEFAULTS -- //
 
 
-    external = true,
+  external = true,
 
-    expantaNumError = "[ExpantaNumError] ",
-    invalidArgument = expantaNumError + "Invalid argument: ",
+  expantaNumError = "[ExpantaNumError] ",
+  invalidArgument = expantaNumError + "Invalid argument: ",
 
-    isExpantaNum = /^[-\+]*(Infinity|NaN|(J+|J\^\d+ )?(10(\^+|\{[1-9]\d*\})|\(10(\^+|\{[1-9]\d*\})\)\^[1-9]\d* )*((\d+(\.\d*)?|\d*\.\d+)?([Ee][-\+]*))*(0|\d+(\.\d*)?|\d*\.\d+))$/,
+  isExpantaNum = /^[-\+]*(Infinity|NaN|(J+|J\^\d+ )?(10(\^+|\{[1-9]\d*\})|\(10(\^+|\{[1-9]\d*\})\)\^[1-9]\d* )*((\d+(\.\d*)?|\d*\.\d+)?([Ee][-\+]*))*(0|\d+(\.\d*)?|\d*\.\d+))$/,
 
-    MAX_SAFE_INTEGER = 9007199254740991,
-    MAX_E = Math.log10(MAX_SAFE_INTEGER), //15.954589770191003
+  MAX_SAFE_INTEGER = 9007199254740991,
+  MAX_E = Math.log10(MAX_SAFE_INTEGER), //15.954589770191003
 
-    // ExpantaNum.prototype object
-    P={},
-    // ExpantaNum static object
-    Q={},
-    // ExpantaNum constants
-    R={};
+  // ExpantaNum.prototype object
+  P={},
+  // ExpantaNum static object
+  Q={},
+  // ExpantaNum constants
+  R={};
 
-  // ExpantaNum prototype methods
-
-  /*
-   *  absoluteValue             abs
-   *  affordArithmeticSeries
-   *  affordGeometricSeries
-   *  arrow
-   *  ceiling                   ceil
-   *  chain
-   *  choose
-   *  comparedTo                cmp
-   *  cubeRoot                  cbrt
-   *  divide                    div
-   *  equals                    eq
-   *  expansion
-   *  exponential               exp
-   *  factorial                 fact
-   *  floor
-   *  gamma
-   *  generalLogarithm          log10
-   *  greaterThan               gt
-   *  greaterThanOrEqualTo      gte
-   *  hyper
-   *  isFinite
-   *  isInfinite
-   *  isInteger                 isint
-   *  isNaN
-   *  isNegative                isneg
-   *  isPositive                ispos
-   *  iteratedexp
-   *  iteratedlog
-   *  lambertw
-   *  layeradd
-   *  layeradd10
-   *  lessThan                  lt
-   *  lessThanOrEqualTo         lte
-   *  logarithm                 logBase
-   *  minus                     sub
-   *  modulo                    mod
-   *  naturalLogarithm          ln        log
-   *  negated                   neg
-   *  notequals                 neq
-   *  pentate                   pent
-   *  plus                      add
-   *  reciprocate               rec
-   *  root
-   *  round
-   *  slog
-   *  squareRoot                sqrt
-   *  ssqrt                     ssrt
-   *  sumArithmeticSeries
-   *  sumGeometricSeries
-   *  times                     mul
-   *  tetrate                   tetr
-   *  toExponential
-   *  toFixed
-   *  toHyperE
-   *  toJSON
-   *  toNumber
-   *  toPower                   pow
-   *  toPrecision
-   *  toString
-   *  toStringWithDecimalPlaces
-   *  valueOf
-   */
   R.ZERO=0;
   R.ONE=1;
   R.E=Math.E;
@@ -135,6 +70,10 @@
   R.EE_MAX_SAFE_INTEGER="ee"+MAX_SAFE_INTEGER;
   R.TETRATED_MAX_SAFE_INTEGER="10^^"+MAX_SAFE_INTEGER;
   R.GRAHAMS_NUMBER="J^63 10^^^(10^)^7625597484984 3638334640023.7783";
+
+
+  // ExpantaNum prototype methods
+
   P.absoluteValue=P.abs=function(){
     var x=this.clone();
     x.sign=1;
@@ -247,6 +186,103 @@
   };
   Q.maximum=Q.max=function (x,y){
     return new ExpantaNum(x).max(y);
+  };
+  P.compareTo_tolerance=P.cmp_tolerance=function (other,tolerance){
+    if (!(other instanceof ExpantaNum)) other=new ExpantaNum(other);
+    return this.eq_tolerance(other,tolerance)?0:this.cmp(other);
+  };
+  Q.compare_tolerance=Q.cmp_tolerance=function (x,y,tolerance){
+    return new ExpantaNum(x).cmp_tolerance(y,tolerance);
+  };
+  P.greaterThan_tolerance=P.gt_tolerance=function (other,tolerance){
+    if (!(other instanceof ExpantaNum)) other=new ExpantaNum(other);
+    return !this.eq_tolerance(other,tolerance)&&this.gt(other);
+  };
+  Q.greaterThan_tolerance=Q.gt_tolerance=function (x,y,tolerance){
+    return new ExpantaNum(x).gt_tolerance(y,tolerance);
+  };
+  P.greaterThanOrEqualTo_tolerance=P.gte_tolerance=function (other,tolerance){
+    if (!(other instanceof ExpantaNum)) other=new ExpantaNum(other);
+    return this.eq_tolerance(other,tolerance)||this.gt(other);
+  };
+  Q.greaterThanOrEqualTo_tolerance=Q.gte_tolerance=function (x,y,tolerance){
+    return new ExpantaNum(x).gte_tolerance(y,tolerance);
+  };
+  P.lessThan_tolerance=P.lt_tolerance=function (other,tolerance){
+    if (!(other instanceof ExpantaNum)) other=new ExpantaNum(other);
+    return !this.eq_tolerance(other,tolerance)&&this.lt(other);
+  };
+  Q.lessThan_tolerance=Q.lt_tolerance=function (x,y,tolerance){
+    return new ExpantaNum(x).lt_tolerance(y,tolerance);
+  };
+  P.lessThanOrEqualTo_tolerance=P.lte_tolerance=function (other,tolerance){
+    if (!(other instanceof ExpantaNum)) other=new ExpantaNum(other);
+    return this.eq_tolerance(other,tolerance)||this.lt(other);
+  };
+  Q.lessThanOrEqualTo_tolerance=Q.lte_tolerance=function (x,y,tolerance){
+    return new ExpantaNum(x).lte_tolerance(y,tolerance);
+  };
+  //From break_eternity.js
+  //https://github.com/Patashu/break_eternity.js/blob/96901974c175cb28f66c7164a5a205cdda783872/src/index.ts#L2802
+  P.equalsTo_tolerance=P.equal_tolerance=P.eq_tolerance=function (other,tolerance){
+    if (!(other instanceof ExpantaNum)) other=new ExpantaNum(other);
+    if (tolerance==null) tolerance=1e-7;
+    if (this.isNaN()||other.isNaN()||this.isFinite()!=other.isFinite()) return false;
+    if (this.sign!=other.sign) return false;
+    if (Math.abs(this.layer-other.layer)>1) return false;
+    var a,b;
+    if (this.layer!=other.layer){
+      var x,y;
+      if (this.layer>other.layer) x=this,y=other;
+      else x=other,y=this;
+      if (!(x.array.length==2&&x.array[0][0]===0&&x.array[1][0]==1&&x.array[1][1]==1)) return false;
+      a=x.array[0][1];
+      if (y.array[y.array.length-1][1]>=10) b=Math.log10(y.array[y.array.length-1][0]+1);
+      else b=Math.log10(y.array[y.array.length-1][0]);
+    }else{
+      if (Math.abs(this.array[this.array.length-1][0]-other.array[other.array.length-1][0])>1) return false;
+      for (var i=1;Math.max(this.array.length,other.array.length)-i>=0;++i){
+        var c=this.array[this.array.length-i][0];
+        var d=other.array[other.array.length-i][0];
+        var x,y,e,f;
+        if (c!=d){
+          if (c>d) x=this,y=other;
+          else x=other,y=this,c=d;
+          e=x.array[x.array.length-i][1];
+          f=0;
+        }else{
+          x=this;
+          y=other;
+          e=x.array[x.array.length-i][1];
+          f=y.array[y.array.length-i][1];
+          if (x.array.length-i==0){
+            a=e;
+            b=f;
+            break;
+          }
+        }
+        if (Math.abs(e-f)>1) return false;
+        else if (e!=f){
+          if (!(x.array.length-i<2||x.array.length-i==2&&x.array[0][0]===0&&x.array[1][0]==1&&x.array[1][1]==1)) return false;
+          a=x.array[0][1];
+          if (c==1) b=Math.log10(y.operator(0));
+          else if (c==2&&y.operator(0)>=1e10) b=Math.log10(y.operator(1)+2);
+          else if (y.operator(c-2)>=10) b=Math.log10(y.operator(c-1)+1);
+          else b=Math.log10(y.operator(c-1));
+          break;
+        }
+      }
+    }
+    return Math.abs(a-b)<=tolerance*Math.max(Math.abs(a),Math.abs(b));
+  };
+  Q.equalsTo_tolerance=Q.equal_tolerance=Q.eq_tolerance=function (x,y,tolerance){
+    return new ExpantaNum(x).eq_tolerance(y,tolerance);
+  };
+  P.notEqualsTo_tolerance=P.notEqual_tolerance=P.neq_tolerance=function (other,tolerance){
+    return !this.eq_tolerance(other,tolerance);
+  };
+  Q.notEqualsTo_tolerance=Q.notEqual_tolerance=Q.neq_tolerance=function (x,y,tolerance){
+    return new ExpantaNum(x).neq_tolerance(y,tolerance);
   };
   P.isPositive=P.ispos=function (){
     return this.gt(ExpantaNum.ZERO);
