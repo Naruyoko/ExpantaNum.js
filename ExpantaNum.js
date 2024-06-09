@@ -16,14 +16,14 @@
       maxOps: 1e3,
 
       // Specify what format is used when serializing for JSON.stringify
-      // 
+      //
       // JSON   0 JSON object
       // STRING 1 String
       serializeMode: 0,
-      
+
       // Deprecated
       // Level of debug information printed in console
-      // 
+      //
       // NONE   0 Show no information.
       // NORMAL 1 Show operations.
       // ALL    2 Show everything.
@@ -772,17 +772,17 @@
     return this.tetr(other,payload);
   };
   Q.iteratedexp=function (x,y,payload){
-    return new ExpantaNum(x).iteratedexp(other,payload);
+    return new ExpantaNum(x).iteratedexp(y,payload);
   };
   //This implementation is highly inaccurate and slow, and probably be given custom code
   P.iteratedlog=function (base,other){
     if (base===undefined) base=10;
     if (other===undefined) other=ExpantaNum.ONE.clone();
     var t=this.clone();
-    if (other.eq(ExpantaNum.ZERO)) return t;
-    if (other.eq(ExpantaNum.ONE)) return t.logBase(base);
     base=new ExpantaNum(base);
     other=new ExpantaNum(other);
+    if (other.eq(ExpantaNum.ZERO)) return t;
+    if (other.eq(ExpantaNum.ONE)) return t.logBase(base);
     return base.tetr(t.slog(base).sub(other));
   };
   Q.iteratedlog=function (x,y,z){
@@ -1719,21 +1719,21 @@
 
     ExpantaNum.JSON = 0;
     ExpantaNum.STRING = 1;
-    
+
     ExpantaNum.NONE = 0;
     ExpantaNum.NORMAL = 1;
     ExpantaNum.ALL = 2;
 
     ExpantaNum.clone=clone;
     ExpantaNum.config=ExpantaNum.set=config;
-    
+
     //ExpantaNum=Object.assign(ExpantaNum,Q);
     for (var prop in Q){
       if (Q.hasOwnProperty(prop)){
         ExpantaNum[prop]=Q[prop];
       }
     }
-    
+
     if (obj === void 0) obj = {};
     if (obj) {
       ps = ['maxOps', 'serializeMode', 'debug'];
@@ -1741,7 +1741,7 @@
     }
 
     ExpantaNum.config(obj);
-    
+
     return ExpantaNum;
   }
 
