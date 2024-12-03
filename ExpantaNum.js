@@ -885,7 +885,7 @@
     if (x.isNaN()||base.isNaN()||x.isInfinite()&&base.isInfinite()) return ExpantaNum.NaN.clone();
     if (x.isInfinite()) return x;
     if (base.isInfinite()) return ExpantaNum.ZERO.clone();
-    if (x.lt(ExpantaNum.ZERO)) return ExpantaNum.ONE.neg();
+    if (x.eq(ExpantaNum.ZERO)) return ExpantaNum.ONE.neg();
     if (x.eq(ExpantaNum.ONE)) return ExpantaNum.ZERO.clone();
     if (x.eq(base)) return ExpantaNum.ONE.clone();
     if (base.lt(Math.exp(1/Math.E))){
@@ -923,7 +923,6 @@
         x=ExpantaNum.logBase(x,base);
       }
     }
-    if (x.gt(10))
     return new ExpantaNum(r);
   };
   Q.slog=function (x,y){
