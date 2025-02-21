@@ -1346,7 +1346,7 @@
     }
   };
   P.toHyperE=function (){
-    if (this.layer) throw Error(expantaNumError+"Sorry, but this prototype doesn't support correct Hyper-E notation for numbers larger than 10{MSI}10");
+    if (this.layer) return "e1##" + this.layer 
     if (this.sign==-1) return "-"+this.abs().toHyperE();
     if (isNaN(this.array[0][1])) return "NaN";
     if (!isFinite(this.array[0][1])) return "Infinity";
