@@ -1114,7 +1114,6 @@
       ++r;
       x=ExpantaNum.logBase(x,base);
     }
-    }
     return ExpantaNum.NaN.clone(); //Failed to converge
   };
   Q.slog=function (x,y){
@@ -1126,6 +1125,12 @@
   };
   Q.pentate=Q.pent=function (x,y){
     return ExpantaNum.arrow(x,3,y);
+  };
+  P.linear_penta_root=function (degree){
+    return this.arrow_base_inverse(3)(degree);
+  };
+  Q.linear_penta_root=function (x,y){
+    return ExpantaNum.arrow_base_inverse(x,3,y);
   };
   P.penta_log=function (other){
     return this.arrow_height_inverse(3)(other);
@@ -1230,6 +1235,83 @@
     if (z.eq(ExpantaNum.ONE)) return function(x,y){return ExpantaNum.add(x,y);};
     return function(x,y,payload){return new ExpantaNum(x).arrow(z.sub(2))(y,payload);};
   };
+  //_^y\arrow_base_inverse{z}(x{z}y)=x
+  //See also: https://github.com/Patashu/break_eternity.js/blob/848736e3dc37d8e7b5cc238f46e3ddb277d0dce2/src/index.ts#L4703
+  P.arrow_base_inverse=function (arrows){
+    var x=this.clone();
+    arrows=new ExpantaNum(arrows);
+    if (!arrows.isint()||arrows.lt(ExpantaNum.ONE)) return function(other){return ExpantaNum.NaN.clone();};
+    if (arrows.eq(ExpantaNum.ONE)) return function(base){return x.root(base);};
+    if (arrows.eq(2)) return function(base){return x.linear_sroot(base);};
+    return function (degree){
+      degree=new ExpantaNum(degree);
+      if (x.isNaN()||degree.isNaN()||x.isInfinite()&&degree.isInfinite()) return ExpantaNum.NaN.clone();
+      var degreeNum=Number(degree);
+      if (degreeNum==1) return x;
+      if (x.eq(ExpantaNum.POSITIVE_INFINITY)) return ExpantaNum.POSITIVE_INFINITY.clone();
+      if (!x.isFinite()) return ExpantaNum.NaN.clone();
+      if (degreeNum>0&&degreeNum<1) return x.root(degree);
+      if (degreeNum<=0) return ExpantaNum.NaN.clone();
+      var arrowsNum=arrows.toNumber();
+      if (degree.gt(ExpantaNum.MAX_SAFE_INTEGER)){
+        if (x.gt("10{"+arrowsNum+"}"+MAX_SAFE_INTEGER)) return ExpantaNum.arrow(10,arrows,x.arrow_height_inverse(arrows)(10).sub(degree));
+        return ExpantaNum.NaN.clone();
+      }
+      if (x.eq(ExpantaNum.ONE)) return ExpantaNum.ONE.clone();
+      if (x.lt(ExpantaNum.ZERO)) return ExpantaNum.NaN.clone();
+      if (x.lt(ExpantaNum.ONE)) return x.linear_sroot(degree);
+      if (x.max(degree).gt("10{"+(arrowsNum+1)+"}"+MAX_SAFE_INTEGER)){
+        if (x.gt(degree)) return x;
+        return ExpantaNum.ZERO.clone();
+      }
+      if (x.arrow(arrows)(degree).lte(x)) return x;
+      var mina=ExpantaNum.ONE.array;
+      var maxa=x.array.slice();
+      while (true){
+        console.log(mina,maxa);
+        if (maxa.length>=2&&maxa[0]<=MAX_E){
+          maxa[0]=MAX_SAFE_INTEGER+1;
+          maxa[1]--;
+          if (!maxa[1]){
+            var i=1;
+            if (maxa.length>2){
+              while (!maxa[i]) maxa[i++]=MAX_SAFE_INTEGER;
+              maxa[i]--;
+            }
+            if (!maxa[i]&&i==maxa.length-1) maxa.pop();
+          }
+        }
+        var mida;
+        if (mina.length>maxa.length) break;
+        if (mina.length<maxa.length){
+          mida=Array(Math.ceil((mina.length+maxa.length)/2)).fill(0);
+          mida[0]=MAX_E;
+          mida[1]=1;
+          mida[mida.length-1]=1;
+        }else{
+          var i=maxa.length-1;
+          while (i>=0&&mina[i]==maxa[i]) i--;
+          if (i<0||mina[i]>maxa[i]) break;
+          var mide;
+          if (i>0) mide=Math.floor((mina[i]+maxa[i])/2);
+          else{
+            mide=(mina[i]+maxa[i])/2;
+            if (mide==mina[i]||mide==maxa[i]) break;
+          }
+          mida=maxa.slice();
+          mida[i]=mide;
+        }
+        var mid=ExpantaNum.fromArray(mida);
+        console.log(mina,maxa,mida,mid+"",mid.arrow(arrows)(degree)+"");
+        if (mid.arrow(arrows)(degree).lte(x)) mina=mid.array;
+        else maxa=mida;
+      }
+      return ExpantaNum.fromArray(mina);
+    };
+  };
+  Q.arrow_base_inverse=function (x,z,y){
+    return new ExpantaNum(x).arrow_base_inverse(z)(y);
+  }
   //arrow_height_inverse{z}_x(x{z}y)=y
   //See also: https://github.com/Patashu/break_eternity.js/blob/848736e3dc37d8e7b5cc238f46e3ddb277d0dce2/src/index.ts#L4647
   P.arrow_height_inverse=function (arrows){
