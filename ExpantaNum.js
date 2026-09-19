@@ -493,7 +493,7 @@
     l+=1/(12*np);
     np*=n2;
     l-=1/(360*np);
-    np*=np*n2;
+    np*=n2;
     l+=1/(1260*np);
     np*=n2;
     l-=1/(1680*np);
@@ -1113,7 +1113,6 @@
       if (x.lte(ExpantaNum.ONE)) return new ExpantaNum(r+x.toNumber()-1);
       ++r;
       x=ExpantaNum.logBase(x,base);
-    }
     }
     return ExpantaNum.NaN.clone(); //Failed to converge
   };
