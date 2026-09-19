@@ -1,5 +1,17 @@
 # ExpantaNum.js changelog
 
+## α 1.6.0 - 2026/09/19
+
+* Add `linear_sroot`, `penta_log` ([#28](https://github.com/Naruyoko/ExpantaNum.js/issues/28)), and `arrow_height_inverse` ([#28](https://github.com/Naruyoko/ExpantaNum.js/issues/28))
+* Add `payload` argument to hyperoperations
+* Fix `slog` of negative inputs always being 1
+* Fix `toNumber ignoring layers, for example on J1e20
+* Fix >MSI in the lowest operation not being normalized
+* Fix normalization of numbers ending with 0 or non-integer and 0 op 1, such as `10^^0` and `10^^3.8`
+* Fix nonfunctional `lambertw` for abs(input)>eeMSI
+* Fix inaccurate small non-integer factorials ([#33](https://github.com/Naruyoko/ExpantaNum.js/issues/33))
+* Mention bigger libraries
+
 ## α 1.5.0 - 2024/06/12
 
 * Added `linear_sroot`, straight lifted from break_eternity.js.
