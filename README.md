@@ -1,4 +1,4 @@
-# ![ExpantaNum.js](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/ExpantaNumJS.png) ![α](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/alpha.png) ![1](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/1.png) ![.](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/dot.png) ![5](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/5.png) ![.](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/dot.png) ![0](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/0.png)
+# ![ExpantaNum.js](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/ExpantaNumJS.png) ![α](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/alpha.png) ![1](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/1.png) ![.](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/dot.png) ![6](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/6.png) ![.](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/dot.png) ![0](https://raw.githubusercontent.com/Naruyoko/ExpantaNum.js/non-code/0.png)
 
 [![NPM](https://img.shields.io/npm/v/expanta_num.js.svg)](https://www.npmjs.com/package/expanta_num.js)
 A huge number library holding up to {10,9e15,1,2}.
@@ -12,7 +12,7 @@ Internally, it is represented as an sign, array, and layer. Sign is 1 or -1. Arr
 
 For detailed explanation and documentation, [see here](https://naruyoko.github.io/ExpantaNum.js/index.html).
 
-Functions are as follows: `abs, neg, cmp, gt, gte, lt, lte, eq, neq, cmp_tolerance, gt_tolerance, gte_tolerance, lt_tolerance, lte_tolerance, eq_tolerance, neq_tolerance, min, max, ispos, isneg, isNaN, isFinite, isint, floor, ceiling, round, add, sub, mul, div, rec, mod, gamma, fact, pow, exp, sqrt, cbrt, root, log10, logBase, log(alias ln), lambertw, tetr, iteratedexp, iteratedlog, layeradd, layeradd10, ssrt, linear_sroot, slog, pent, arrow, chain, hyper, expansion, affordGeometricSeries, affordArithmeticSeries, sumGeometricSeries, sumArithmeticSeries, choose`. Of course, there are `toNumber()`, `toString()` (`toValue`, `toStringWithDecimalPlaces`, `toExponential`, `toFixed`, `toPrecision`), and `toJSON()`. Add ~~one of a kind~~ `toHyperE()`.
+Functions are as follows: `abs, neg, cmp, gt, gte, lt, lte, eq, neq, cmp_tolerance, gt_tolerance, gte_tolerance, lt_tolerance, lte_tolerance, eq_tolerance, neq_tolerance, min, max, ispos, isneg, isNaN, isFinite, isint, floor, ceiling, round, add, sub, mul, div, rec, mod, gamma, fact, pow, exp, sqrt, cbrt, root, log10, logBase, log(alias ln), lambertw, tetr, iteratedexp, iteratedlog, layeradd, layeradd10, ssrt, linear_sroot, slog, pent, penta_log, arrow, chain, hyper, arrow_height_inverse, expansion, affordGeometricSeries, affordArithmeticSeries, sumGeometricSeries, sumArithmeticSeries, choose`. Of course, there are `toNumber()`, `toString()` (`toValue`, `toStringWithDecimalPlaces`, `toExponential`, `toFixed`, `toPrecision`), and `toJSON()`. Add ~~one of a kind~~ `toHyperE()`.
 
 If you are using built-in constants: Constants can not be replaced directly, however **the properties of it can. As the constants are also used inside ExpantaNum.js, modifying them could CAUSE SERIOUS ISSUES AND POTENTIALLY RENDER THE LIBRARY UNUSABLE.**
 
@@ -26,12 +26,9 @@ If you are not planning to make something to the scale of [True Infinity](https:
 * [break_eternity.js](https://github.com/Patashu/break_eternity.js) by Patashu - 10^^1.8e308
 * [OmegaNum.js](https://github.com/Naruyoko/OmegaNum.js) by Naruyoko (me) - 10{9e15}10
 
-Future ideas:
+If you want even larger numbers, check out the following:
 
-* ~~ExpantaNum.js - f<sub>ω+1</sub>, array of value-index pair with separate counter.~~
-* OmegaExpantaNum.js - f<sub>ω2</sub>
-* MegotaNum.js - f<sub>ω<sup>2</sup></sub>
-* PowiainaNum.js - f<sub>ω<sup>3</sup></sub>
-* GodgahNum.js - f<sub>ω<sup>ω</sup></sub>
+* [MegotaNum.js](https://github.com/sonic3XE/MegotaNum.js) by sonic3XE - {10,9e15,1,1,2}
+* [PowiainaNum.js](https://github.com/VeryrrDefine/PowiainaNum.js) by VeryrrDefine - {10,9e15,1,1,1,2}
 
 number library, big number, big num, bignumber, bignum, big integer, biginteger, bigint, incremental games, idle games, large numbers, huge numbers, googology, javascript

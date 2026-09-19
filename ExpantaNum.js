@@ -262,7 +262,7 @@
           }
         }
         if (Math.abs(e-f)>1) return false;
-        else if (e!=f){
+        if (e!=f){
           if (!(x.array.length-i<2||x.array.length-i==2&&x.array[0][0]===0&&x.array[1][0]==1&&x.array[1][1]==1)) return false;
           a=x.array[0][1];
           if (c==1) b=Math.log10(y.operator(0));
@@ -493,7 +493,7 @@
     l+=1/(12*np);
     np*=n2;
     l-=1/(360*np);
-    np*=np*n2;
+    np*=n2;
     l+=1/(1260*np);
     np*=n2;
     l-=1/(1680*np);
@@ -731,7 +731,7 @@
       else return new ExpantaNum(f_lambertw(x.sign*x.operator(0)));
     }else{
       if (x.ispos()) return ExpantaNum.NaN.clone();
-      if (x.abs().gt(ExpantaNum.EE_MAX_SAFE_INTEGER)) return x.neg().recip().lambertw().neg();
+      if (x.abs().gt(ExpantaNum.EE_MAX_SAFE_INTEGER)) return x.neg().rec().lambertw().neg();
       if (x.abs().gt(ExpantaNum.MAX_SAFE_INTEGER)) return d_lambertw(x,1e-10,false);
       else return new ExpantaNum(f_lambertw(x.sign*x.operator(0),1e-10,false));
     }
@@ -746,10 +746,10 @@
     var t=this.clone();
     other=new ExpantaNum(other);
     payload=new ExpantaNum(payload);
+    if (t.isNaN()||other.isNaN()||payload.isNaN()) return ExpantaNum.NaN.clone();
     if (payload.neq(ExpantaNum.ONE)) other=other.add(payload.slog(t));
     if (ExpantaNum.debug>=ExpantaNum.NORMAL) console.log(t+"^^"+other);
     var negln;
-    if (t.isNaN()||other.isNaN()||payload.isNaN()) return ExpantaNum.NaN.clone();
     if (other.isInfinite()&&other.sign>0){
       if (t.gte(Math.exp(1/Math.E))) return ExpantaNum.POSITIVE_INFINITY.clone();
       //Formula for infinite height power tower.
@@ -875,17 +875,213 @@
   Q.ssqrt=Q.ssrt=function (x){
     return new ExpantaNum(x).ssqrt();
   };
+  //Uses linear approximation
+  //For more information, please see the break_eternity.js source:
+  //https://github.com/Patashu/break_eternity.js/blob/848736e3dc37d8e7b5cc238f46e3ddb277d0dce2/src/index.ts#L4008
+  P.linear_sroot=function (degree){
+    var x=new ExpantaNum(this);
+    degree=new ExpantaNum(degree);
+    if (degree.isNaN()) return ExpantaNum.NaN.clone();
+    var degreeNum=Number(degree);
+    if (degreeNum==1) return x;
+    if (x.eq(ExpantaNum.POSITIVE_INFINITY)) return ExpantaNum.POSITIVE_INFINITY.clone();
+    if (!x.isFinite()) return ExpantaNum.NaN.clone();
+    if (degreeNum>0&&degreeNum<1) return x.root(degree);
+    if (degreeNum>-2&&degreeNum<-1) return degree.add(2).pow(x.rec());
+    if (degreeNum<=0) return ExpantaNum.NaN.clone();
+    if (degree.gt(ExpantaNum.MAX_SAFE_INTEGER)){
+      var xNum=Number(x);
+      if (xNum<Math.E&&xNum>1/Math.E) return x.pow(x.rec());
+      if (x.gt(ExpantaNum.TETRATED_MAX_SAFE_INTEGER)){
+        var nh=x.slog(10).sub(degree);
+        if (nh.lte(ExpantaNum.ZERO)) return new ExpantaNum(Math.exp(1/Math.E));
+        return ExpantaNum.tetr(10,nh);
+      }
+      return ExpantaNum.NaN.clone();
+    }
+    if (x.eq(ExpantaNum.ONE)) return ExpantaNum.ONE.clone();
+    if (x.lt(ExpantaNum.ZERO)) return ExpantaNum.NaN.clone();
+    if (x.eq(ExpantaNum.ZERO)) return ExpantaNum.ZERO.clone();
+    if (x.gt(ExpantaNum.ONE)){
+      var upperBound;
+      if (degreeNum<=1) upperBound=x.root(degree);
+      else if (x.gte(ExpantaNum.tetr(10,degree))) upperBound=x.iteratedlog(10,degreeNum-1);
+      else upperBound=new ExpantaNum(10);
+      var lower=ExpantaNum.ZERO;
+      var layer=upperBound.array[2]||0;
+      var upper=upperBound.iteratedlog(10,layer);
+      var guess=upper.div(2);
+      while (true){
+        if (ExpantaNum.iteratedexp(10,layer,guess).tetr(degree).gt(x)) upper=guess;
+        else lower=guess;
+        var newguess=lower.add(upper).div(2);
+        if (newguess.eq(guess)) break;
+        guess=newguess;
+      }
+      return ExpantaNum.iteratedexp(10,layer,guess);
+    }else{
+      var BIG=new ExpantaNum("10^^10");
+      var stage=1;
+      var minimum=BIG;
+      var maximum=BIG;
+      var lower=BIG
+      var upper=new ExpantaNum(1e-16)
+      var prevspan=ExpantaNum.ZERO;
+      var difference=BIG;
+      var upperBound=ExpantaNum.pow(10,upper).rec();
+      var distance=ExpantaNum.ZERO;
+      var prevPoint=upperBound;
+      var nextPoint=upperBound;
+      var evenDegree=Math.ceil(degreeNum)%2==0;
+      var range=0;
+      var lastValid=BIG;
+      var infLoopDetector=false;
+      var previousUpper=ExpantaNum.ZERO;
+      var decreasingFound=false;
+      while (stage<4){
+        if (stage==2){
+          if (evenDegree) break;
+          lower=BIG;
+          upper=minimum;
+          stage=3;
+          difference=BIG;
+          lastValid=BIG;
+        }
+        infLoopDetector=false;
+        while (upper.neq(lower)){
+          previousUpper=upper;
+          var up10r=ExpantaNum.pow(10,upper).rec();
+          var up10rtd=up10r.tetr(degree);
+          if (up10rtd.eq(ExpantaNum.ONE)&&up10r.lt(0.4)){
+            upperBound=up10r;
+            prevPoint=up10r;
+            nextPoint=up10r;
+            distance=ExpantaNum.ZERO;
+            range=-1;
+            if (stage==3) lastValid=upper;
+          }else if (up10rtd.eq(up10r)&&!evenDegree&&up10r.lt(0.4)){
+            upperBound=up10r;
+            prevPoint=up10r;
+            nextPoint=up10r;
+            distance=ExpantaNum.ZERO;
+            range=0;
+          }else if (up10rtd.eq(up10r.mul(2).tetr(degree))){
+            upperBound=up10r;
+            prevPoint=ExpantaNum.ZERO;
+            nextPoint=upperBound.mul(2);
+            distance=upperBound;
+            if (evenDegree) range=-1;
+            else range=0;
+          }else{
+            prevspan=upper.mul(1.2e-16);
+            upperBound=up10r;
+            prevPoint=ExpantaNum.pow(10,upper.add(prevspan)).rec();
+            distance=upperBound.sub(prevPoint);
+            nextPoint=upperBound.add(distance);
+            var ubtd=upperBound.tetr(degree); //upperBound does not change during lifetime
+            var pptd;
+            var nptd;
+            while (prevPoint.gte(upperBound)||nextPoint.lte(upperBound)||(pptd=prevPoint.tetr(degree)).eq(ubtd)||(nptd=nextPoint.tetr(degree)).eq(ubtd)){
+              prevspan=prevspan.mul(2);
+              prevPoint=ExpantaNum.pow(10,upper.add(prevspan)).rec();
+              distance=upperBound.sub(prevPoint);
+              nextPoint=upperBound.add(distance);
+            }
+            //pptd and nptd are up-to-date
+            if (stage==1&&nptd.gt(ubtd)&&pptd.gt(ubtd)||stage==3&&nptd.lt(ubtd)&&pptd.lt(ubtd)) lastValid=upper;
+            if (nptd.lt(ubtd)) range=-1;
+            else if (evenDegree) range=1;
+            else if (stage==3&&upper.gt_tolerance(minimum,1e-8)) range=0;
+            else{
+              while (prevPoint.gte(upperBound)||nextPoint.lte(upperBound)||(pptd=prevPoint.tetr(degree)).eq_tolerance(ubtd,1e-8)||(nptd=nextPoint.tetr(degree)).eq_tolerance(ubtd,1e-8)){
+                prevspan=prevspan.mul(2);
+                prevPoint=ExpantaNum.pow(10,upper.add(prevspan)).rec();
+                distance=upperBound.sub(prevPoint);
+                nextPoint=upperBound.add(distance);
+              }
+              //pptd and nptd are up-to-date
+              if (nptd.sub(ubtd).lt(ubtd.sub(pptd))) range=0;
+              else range=1;
+            }
+          }
+          if (range==-1) decreasingFound=true;
+          if (stage==1&&range==1||stage==3&&range!=0){
+            if (lower.eq(BIG)) upper=upper.mul(2);
+            else{
+              upper=upper.add(lower).div(2);
+              if (infLoopDetector&&(range==1&&stage==1||range==-1&&stage==3)) break;
+            }
+          }else{
+            if (lower.eq(BIG)){
+              lower=upper;
+              upper=upper.div(2);
+            }else{
+              lower=lower.sub(difference);
+              upper=upper.sub(difference);
+              if (infLoopDetector&&(range==1&&stage==1||range==-1&&stage==3)) break;
+            }
+          }
+          var newDifference=lower.sub(upper).div(2).abs();
+          if (newDifference.gt(difference.mul(1.5))) infLoopDetector=true;
+          difference=newDifference;
+          if (upper.gt(1e18)||upper.eq(previousUpper)) break;
+        }
+        if (upper.gt(1e18)) break;
+        if (!decreasingFound) break;
+        if (lastValid.eq(BIG)) break;
+        if (stage==1) minimum=lastValid;
+        else if (stage==3) maximum=lastValid;
+        stage++;
+      }
+      lower=minimum;
+      upper=new ExpantaNum(1e-18);
+      var previous=upper;
+      var guess=ExpantaNum.ZERO;
+      var loopGoing=true;
+      while (loopGoing){
+        if (lower.eq(BIG)) guess=upper.mul(2);
+        else guess=lower.add(upper).div(2);
+        if (ExpantaNum.pow(10,guess).rec().tetr(degree).gt(x)) upper=guess;
+        else lower=guess;
+        if (guess.eq(previous)) loopGoing=false;
+        else previous=guess;
+        if (upper.gt(1e18)) return ExpantaNum.NaN.clone();
+      }
+      if (guess.neq_tolerance(minimum,1e-15)) return ExpantaNum.pow(10,guess).rec();
+      else{
+        if (maximum.eq(BIG)) return ExpantaNum.NaN.clone();
+        lower=BIG;
+        upper=maximum;
+        previous=upper;
+        guess=ExpantaNum.ZERO;
+        var loopGoing=true;
+        while (loopGoing){
+          if (lower.eq(BIG)) guess=upper.mul(2);
+          else guess=lower.add(upper).div(2);
+          if (ExpantaNum.pow(10,guess).rec().tetr(degree).gt(x)) upper=guess;
+          else lower=guess;
+          if (guess.eq(previous)) loopGoing=false;
+          else previous=guess;
+          if (upper.gt(1e18)) return ExpantaNum.NaN.clone();
+        }
+        return ExpantaNum.pow(10,guess).rec();
+      }
+    }
+  };
+  Q.linear_sroot=function (x,y){
+    return new ExpantaNum(x).linear_sroot(y);
+  };
   //Super-logarithm, one of tetration's inverses, tells you what size power tower you'd have to tetrate base to to get number. By definition, will never be higher than 1.8e308 in break_eternity.js, since a power tower 1.8e308 numbers tall is the largest representable number.
   //Uses linear approximation
   //https://en.wikipedia.org/wiki/Super-logarithm
   P.slog=function (base){
     if (base===undefined) base=10;
-    var x=new ExpantaNum(this);
+    var x=this.clone();
     base=new ExpantaNum(base);
     if (x.isNaN()||base.isNaN()||x.isInfinite()&&base.isInfinite()) return ExpantaNum.NaN.clone();
     if (x.isInfinite()) return x;
     if (base.isInfinite()) return ExpantaNum.ZERO.clone();
-    if (x.lt(ExpantaNum.ZERO)) return ExpantaNum.ONE.neg();
+    if (x.eq(ExpantaNum.ZERO)) return ExpantaNum.ONE.neg();
     if (x.eq(ExpantaNum.ONE)) return ExpantaNum.ZERO.clone();
     if (x.eq(base)) return ExpantaNum.ONE.clone();
     if (base.lt(Math.exp(1/Math.E))){
@@ -905,6 +1101,7 @@
       }
       return ExpantaNum.ZERO.clone();
     }
+    if (x.lt(ExpantaNum.ZERO)) return base.pow(x).sub(2); //Inversion of x^^y=log_x(2+y) for -2<y<=-1
     var r=0;
     var t=(x.operator(1)||0)-(base.operator(1)||0);
     if (t>3){
@@ -913,18 +1110,11 @@
       x.operator(1,x.operator(1)-l);
     }
     for (var i=0;i<100;++i){
-      if (x.lt(ExpantaNum.ZERO)){
-        x=ExpantaNum.pow(base,x);
-        --r;
-      }else if (x.lte(1)){
-        return new ExpantaNum(r+x.toNumber()-1);
-      }else{
-        ++r;
-        x=ExpantaNum.logBase(x,base);
-      }
+      if (x.lte(ExpantaNum.ONE)) return new ExpantaNum(r+x.toNumber()-1);
+      ++r;
+      x=ExpantaNum.logBase(x,base);
     }
-    if (x.gt(10))
-    return new ExpantaNum(r);
+    return ExpantaNum.NaN.clone(); //Failed to converge
   };
   Q.slog=function (x,y){
     return new ExpantaNum(x).slog(y);
@@ -936,6 +1126,12 @@
   Q.pentate=Q.pent=function (x,y){
     return ExpantaNum.arrow(x,3,y);
   };
+  P.penta_log=function (other){
+    return this.arrow_height_inverse(3)(other);
+  };
+  Q.penta_log=function (x,y){
+    return ExpantaNum.arrow_height_inverse(x,3,y);
+  };
   //Uses linear approximations for real height
   P.arrow=function (arrows){
     var t=this.clone();
@@ -943,16 +1139,15 @@
     if (!arrows.isint()||arrows.lt(ExpantaNum.ZERO)) return function(other){return ExpantaNum.NaN.clone();};
     if (arrows.eq(ExpantaNum.ZERO)) return function(other){return t.mul(other);};
     if (arrows.eq(ExpantaNum.ONE)) return function(other){return t.pow(other);};
-    if (arrows.eq(2)) return function(other){return t.tetr(other);};
-    return function (other){
-      var depth;
-      if (arguments.length==2) depth=arguments[1]; //must hide
-      else depth=0;
+    if (arrows.eq(2)) return function(other,payload){return t.tetr(other,payload);};
+    return function (other,payload,depth){
+      if (payload===undefined) payload=ExpantaNum.ONE;
+      if (depth===undefined) depth=0;
       other=new ExpantaNum(other);
-      var r;
+      payload=new ExpantaNum(payload);
+      if (t.isNaN()||other.isNaN()||payload.isNaN()) return ExpantaNum.NaN.clone();
+      if (payload.neq(ExpantaNum.ONE)) other=other.add(payload.arrow_height_inverse(arrows)(t));
       if (ExpantaNum.debug>=ExpantaNum.NORMAL) console.log(t+"{"+arrows+"}"+other);
-    if (t.isNaN()||other.isNaN()) return ExpantaNum.NaN.clone();
-      if (other.lt(ExpantaNum.ZERO)) return ExpantaNum.NaN.clone();
       if (t.eq(ExpantaNum.ZERO)){
         if (other.eq(ExpantaNum.ONE)) return ExpantaNum.ZERO.clone();
         return ExpantaNum.NaN.clone();
@@ -960,15 +1155,18 @@
       if (t.eq(ExpantaNum.ONE)) return ExpantaNum.ONE.clone();
       if (other.eq(ExpantaNum.ZERO)) return ExpantaNum.ONE.clone();
       if (other.eq(ExpantaNum.ONE)) return t.clone();
-      if (arrows.gt(ExpantaNum.MAX_SAFE_INTEGER)){
-        r=arrows.clone();
+      //By induction: See initialization of r in the fallthrough branch
+      if (other.gt(ExpantaNum.ZERO)&&other.lt(ExpantaNum.ONE)) return t.pow(other);
+      if (other.gt(ExpantaNum.ONE)&&arrows.gt(ExpantaNum.MAX_SAFE_INTEGER)){
+        var r=arrows.clone();
         r.layer++;
         return r;
       }
       var arrowsNum=arrows.toNumber();
-      if (other.eq(2)) return t.arrow(arrowsNum-1)(t,depth+1);
+      if (other.eq(2)) return t.arrow(arrowsNum-1)(t,ExpantaNum.ONE,depth+1);
       if (t.max(other).gt("10{"+(arrowsNum+1)+"}"+MAX_SAFE_INTEGER)) return t.max(other);
       if (t.gt("10{"+arrowsNum+"}"+MAX_SAFE_INTEGER)||other.gt(ExpantaNum.MAX_SAFE_INTEGER)){
+        var r;
         if (t.gt("10{"+arrowsNum+"}"+MAX_SAFE_INTEGER)){
           r=t.clone();
           r.operator(arrowsNum,r.operator(arrowsNum)-1);
@@ -989,11 +1187,25 @@
       var y=other.toNumber();
       var f=Math.floor(y);
       var arrows_m1=arrows.sub(ExpantaNum.ONE);
-      r=t.arrow(arrows_m1)(y-f,depth+1);
+      var r=t.arrow(arrows_m1)(y-f,ExpantaNum.ONE,depth+1);
+      var l=ExpantaNum.NaN;
       for (var i=0,m=new ExpantaNum("10{"+(arrowsNum-1)+"}"+MAX_SAFE_INTEGER);f!==0&&r.lt(m)&&i<100;++i){
         if (f>0){
-          r=t.arrow(arrows_m1)(r,depth+1);
+          r=t.arrow(arrows_m1)(r,ExpantaNum.ONE,depth+1);
+          if (l.eq(r)){
+            f=0;
+            break;
+          }
+          l=r;
           --f;
+        }else{
+          r=r.arrow_height_inverse(arrows_m1)(t);
+          if (l.eq(r)){
+            f=0;
+            break;
+          }
+          l=r;
+          ++f;
         }
       }
       if (i==100) f=0;
@@ -1005,8 +1217,8 @@
   P.chain=function (other,arrows){
     return this.arrow(arrows)(other);
   };
-  Q.arrow=function (x,z,y){
-    return new ExpantaNum(x).arrow(z)(y);
+  Q.arrow=function (x,z,y,payload){
+    return new ExpantaNum(x).arrow(z)(y,payload);
   };
   Q.chain=function (x,y,z){
     return new ExpantaNum(x).arrow(z)(y);
@@ -1015,8 +1227,80 @@
     z=new ExpantaNum(z);
     if (z.eq(ExpantaNum.ZERO)) return function(x,y){return new ExpantaNum(y).eq(ExpantaNum.ZERO)?new ExpantaNum(x):new ExpantaNum(x).add(ExpantaNum.ONE);};
     if (z.eq(ExpantaNum.ONE)) return function(x,y){return ExpantaNum.add(x,y);};
-    return function(x,y){return new ExpantaNum(x).arrow(z.sub(2))(y);};
+    return function(x,y,payload){return new ExpantaNum(x).arrow(z.sub(2))(y,payload);};
   };
+  //arrow_height_inverse{z}_x(x{z}y)=y
+  //See also: https://github.com/Patashu/break_eternity.js/blob/848736e3dc37d8e7b5cc238f46e3ddb277d0dce2/src/index.ts#L4647
+  P.arrow_height_inverse=function (arrows){
+    var x=this.clone();
+    arrows=new ExpantaNum(arrows);
+    if (!arrows.isint()||arrows.lt(ExpantaNum.ONE)) return function(other){return ExpantaNum.NaN.clone();};
+    if (arrows.eq(ExpantaNum.ONE)) return function(base){return x.logBase(base);};
+    if (arrows.eq(2)) return function(base){return x.slog(base);};
+    return function (base,depth){
+      if (base===undefined) base=10;
+      if (depth===undefined) depth=0;
+      base=new ExpantaNum(base);
+      if (x.isNaN()||base.isNaN()||x.isInfinite()&&base.isInfinite()) return ExpantaNum.NaN.clone();
+      if (base.lte(ExpantaNum.ONE)) return ExpantaNum.NaN.clone();
+      if (x.isInfinite()) return x;
+      if (base.isInfinite()) return ExpantaNum.ZERO.clone();
+      if (x.eq(ExpantaNum.ZERO)) return ExpantaNum.ONE.neg();
+      if (x.eq(ExpantaNum.ONE)) return ExpantaNum.ZERO.clone();
+      if (x.eq(base)) return ExpantaNum.ONE.clone();
+      //Inverse of shortcut for 0<other<1 in arrow
+      if (x.gt(ExpantaNum.ONE)&&x.lt(base)) return x.logBase(base);
+      if (x.gt(ExpantaNum.ONE)&&arrows.gt(ExpantaNum.MAX_SAFE_INTEGER)){
+        var twocmp=x.cmp(base.arrow(arrows)(base));
+        if (twocmp==0) return new ExpantaNum(2);
+        if (twocmp>0) return x;
+        return ExpantaNum.ONE.clone(); //base{arrows}(1+epsilon) explodes
+      }
+      var arrowsNum=arrows.toNumber();
+      if (arrowsNum==2&&x.lt(ExpantaNum.ONE.neg())){
+        if (x.lt(-2)) return ExpantaNum.NaN.clone();
+        var infrcmp=x.cmp(base.arrow(arrows.sub(ExpantaNum.ONE))(x));
+        if (infrcmp==0) return ExpantaNum.NEGATIVE_INFINITY.clone();
+        if (infrcmp>0) return ExpantaNum.NaN.clone();
+      }
+      if (x.max(base).gt("10{"+(arrowsNum+1)+"}"+MAX_SAFE_INTEGER)){
+        if (x.gt(base)) return x;
+        return ExpantaNum.ZERO.clone();
+      }
+      if (x.max(base).gt("10{"+arrowsNum+"}"+MAX_SAFE_INTEGER)){
+        if (x.gt(base)){
+          x.operator(arrowsNum,x.operator(arrowsNum)-1);
+          x.normalize();
+          return x.sub(x.operator(arrowsNum-1));
+        }
+        return ExpantaNum.ZERO.clone();
+      }
+      var r=0;
+      var t=(x.operator(arrowsNum-1)||0)-(base.operator(arrowsNum-1)||0);
+      if (depth>=ExpantaNum.maxOps+10) return new ExpantaNum(t);
+      if (t>3){
+        var l=t-3;
+        r+=l;
+        x.operator(arrowsNum-1,x.operator(arrowsNum-1)-l);
+      }
+      var arrows_m1=arrows.sub(ExpantaNum.ONE);
+      for (var i=0;i<100;++i){
+        if (x.lt(ExpantaNum.ZERO)){
+          x=base.arrow(arrows_m1)(x);
+          --r;
+        }else if (x.lte(ExpantaNum.ONE)){
+          return new ExpantaNum(r+x.toNumber()-1);
+        }else{
+          ++r;
+          x=x.arrow_height_inverse(arrows_m1)(base,depth+1);
+        }
+      }
+      return ExpantaNum.NaN.clone(); //Failed to converge
+    };
+  };
+  Q.arrow_height_inverse=function (x,z,y){
+    return new ExpantaNum(x).arrow_height_inverse(z)(y);
+  }
   P.expansion=function (other){
     var t=this.clone();
     other=new ExpantaNum(other);
@@ -1198,28 +1482,24 @@
         x.array[0][1]=10;
       }
       if (x.array.length>=2&&x.array[0][0]===0&&x.array[1][0]!=1){
-        if (x.array[0][1]) x.array.splice(1,0,[x.array[1][0]-1,x.array[0][1]]);
-        x.array[0][1]=1;
-        if (x.array[2][1]>1){
-          x.array[2][1]--;
+        var p=1;
+        if (Math.floor(x.array[0][1])) x.array.splice(1,0,[x.array[1][0]-1,Math.floor(x.array[0][1])]),p++;
+        x.array[0][1]=Math.pow(10,x.array[0][1]-Math.floor(x.array[0][1]));
+        if (x.array[p][1]>1){
+          x.array[p][1]--;
         }else{
-          x.array.splice(2,1);
+          x.array.splice(p,1);
         }
         b=true;
       }
-      for (i=1;i<x.array.length;++i){
+      for (i=0;i<x.array.length;++i){
         if (x.array[i][1]>MAX_SAFE_INTEGER){
           if (i!=x.array.length-1&&x.array[i+1][0]==x.array[i][0]+1){
             x.array[i+1][1]++;
           }else{
             x.array.splice(i+1,0,[x.array[i][0]+1,1]);
           }
-          if (x.array[0][0]===0){
-            x.array[0][1]=x.array[i][1]+1;
-          }else{
-            x.array.splice(0,0,[0,x.array[i][1]+1]);
-          }
-          x.array.splice(1,i);
+          x.array.splice(0,i+1,[0,x.array[i][1]+1]);
           b=true;
         }
       }
@@ -1235,7 +1515,7 @@
   P.toNumber=function (){
     //console.log(this.array);
     if (this.sign==-1) return -1*this.abs();
-    if (this.array.length>=2&&(this.array[1][0]>=2||this.array[1][1]>=2||this.array[1][1]==1&&this.array[0][1]>Math.log10(Number.MAX_VALUE))) return Infinity;
+    if (this.layer>0||this.array.length>=2&&(this.array[1][0]>=2||this.array[1][1]>=2||this.array[1][1]==1&&this.array[0][1]>Math.log10(Number.MAX_VALUE))) return Infinity;
     if (this.array.length>=2&&this.array[1][1]==1) return Math.pow(10,this.array[0][1]);
     return this.array[0][1];
   };
