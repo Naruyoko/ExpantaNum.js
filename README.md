@@ -24,7 +24,7 @@ If you are not planning to make something to the scale of [True Infinity](https:
 * [confractus_numerus.js](https://github.com/aarextiaokhiao/magna_numerus.js/blob/master/confractus_numerus.js) by Aarex Tiaokhiao - ee9e15
 * [magna_numerus.js](https://github.com/aarextiaokhiao/magna_numerus.js/blob/master/magna_numerus.js) by Aarex Tiaokhiao - ?
 * [break_eternity.js](https://github.com/Patashu/break_eternity.js) by Patashu - 10^^1.8e308
-* [OmegaNum.js](https://github.com/Naruyoko/OmegaNum.js) by Naruyoko (me) - 10{9e15}10
+* [OmegaNum.js](https://github.com/Naruyoko/OmegaNum.js) by Naruyoko (me) - 10{1000}9e15
 
 If you want even larger numbers, check out the following:
 
