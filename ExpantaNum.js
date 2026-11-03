@@ -1301,6 +1301,12 @@
   Q.arrow_height_inverse=function (x,z,y){
     return new ExpantaNum(x).arrow_height_inverse(z)(y);
   }
+  P.hyperlog_10=P.hlog10=function(order){
+    return this.arrow_height_inverse(order)();
+  }
+  Q.hyperlog_10=Q.hlog10=function(x, order){
+    return new ExpantaNum(x).arrow_height_inverse(order)();
+  }
   P.expansion=function (other){
     var t=this.clone();
     other=new ExpantaNum(other);
